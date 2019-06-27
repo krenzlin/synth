@@ -37,20 +37,15 @@ void setup() {
     Serial.print("installed:");
     Serial.print(err);
     Serial.print("\n\r");
+
+    // important otherwise no sound
     i2s_set_dac_mode(I2S_DAC_CHANNEL_BOTH_EN);
 
 }
 
 void loop() {
     size_t bytes_written = 0;
-    Serial.print("in loop\n\r");
-
     for(unsigned int i=0;i<BUFFER_LENGTH;i++)
         buffer[i] = i;
-    Serial.print("pre i2s_write\n\r");
-
     i2s_write(I2S_PORT, &buffer, BUFFER_LENGTH, &bytes_written, portMAX_DELAY);
-    Serial.print("written: ");
-    Serial.print(bytes_written);
-    Serial.print("\n\r");
 }
