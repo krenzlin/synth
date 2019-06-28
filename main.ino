@@ -2,47 +2,14 @@
 #include "driver/i2s.h"
 #include "freertos/portmacro.h"  // needed for 'portMAX_DELAY'
 
+
 #define DAC1_GPIO 25
 #define DAC2_GPIO 26
 
 #define I2S_USE_BUILT_IN_DAC (i2s_mode_t)(I2S_MODE_MASTER | I2S_MODE_TX | I2S_MODE_DAC_BUILT_IN)
 
-#define SAMPLE_RATE 96000
 #define BUFFER_SIZE 32
 #define DAC_MAX_VALUE 255.0 // IMPORTANT THAT IT'S A FLOAT, OTHERWISE ALL MATH IS CASTED TO INT
-
-
-class AudioObject {
-    public:
-        virtual float next_sample();
-};
-
-class Saw : public AudioObject {
-    private:
-        float frequency;
-        float phase;
-        float phase_increment;
-
-    public:
-        void set_frequency(float frequency);
-        float next_sample();
-};
-
-void Saw::set_frequency(float frequency) {
-    Saw::frequency = frequency;
-    Saw::phase_increment = frequency / float(SAMPLE_RATE);
-}
-
-float Saw::next_sample() {
-    float sample = phase;
-
-    phase += phase_increment;
-    if (phase > 1.0) {
-        phase -= 1.0;
-    }
-
-    return sample;
-}
 
 
 void setup_I2S() {
@@ -66,8 +33,8 @@ void setup_I2S() {
     i2s_set_dac_mode(I2S_DAC_CHANNEL_RIGHT_EN);
 }
 
-Saw saw1;
-Saw saw_sub;
+VoiceManager vm;
+
 TaskHandle_t audio_task;
 
 void setup() {
@@ -77,8 +44,7 @@ void setup() {
 
     setup_I2S();
 
-    saw1.set_frequency(349.2);
-    saw_sub.set_frequency(174.6);
+    vm.init();
 
     xTaskCreatePinnedToCore(
         audio_loop,                  /* pvTaskCode */
@@ -98,7 +64,7 @@ void audio_loop(void * parameter) {
     while(1) {
         // fill buffer with samples
         for (auto i=0; i<BUFFER_SIZE; i++) {
-            sample = saw1.next_sample();
+            sample = vm.next_sample();
             buffer[i] = (unsigned int)(sample * DAC_MAX_VALUE);
             buffer[i] = buffer[i] << 8;
         }
@@ -115,13 +81,5 @@ void audio_loop(void * parameter) {
     */
 }
 
-#define D 10
 void loop() {
-    static float f {8000.0};
-    saw1.set_frequency(f);
-    f += 10;
-    if (f > 12000.0) {
-        f = 8000.0;
-    }
-    delay(D);
 }
