@@ -58,43 +58,52 @@ void setup_I2S() {
     };
 
     esp_err_t err = i2s_driver_install(I2S_NUM_0, &i2s_config, 0, NULL);
-    Serial.printf("I2S install: %d\nr\r", err);
+    Serial.printf("I2S install: %d\n\r", err);
 
     // important otherwise no sound
     i2s_set_dac_mode(I2S_DAC_CHANNEL_RIGHT_EN);
 }
 
 Saw saw1;
-Saw saw2;
-Saw saw3;
-
+Saw saw_sub;
+TaskHandle_t audio_task;
 
 void setup() {
     Serial.begin(115200);
+    Serial.print("setup() running on core ");
+    Serial.println(xPortGetCoreID());
 
     setup_I2S();
 
-    saw1.set_frequency(349.2);  // F
-    saw2.set_frequency(440.0);  // A
-    saw3.set_frequency(523.3);  // C
+    saw1.set_frequency(349.2);
+    saw_sub.set_frequency(174.6);
 
+    xTaskCreatePinnedToCore(
+        audio_loop,                  /* pvTaskCode */
+        "audio_loop",            /* pcName */
+        1000,                   /* usStackDepth */
+        NULL,                   /* pvParameters */
+        1,                      /* uxPriority */
+        &audio_task,                 /* pxCreatedTask */
+        0);                     /* xCoreID */
 }
 
-void audio_loop(AudioObject &audio_object) {
+void audio_loop(void * parameter) {
     static unsigned int buffer[BUFFER_SIZE];
     static float sample {0.0};
-
-    // fill buffer with samples
-    for (auto i=0; i<BUFFER_SIZE; i++) {
-        sample = audio_object.next_sample();
-        buffer[i] = (unsigned int)(sample * DAC_MAX_VALUE);
-        buffer[i] = buffer[i] << 8;
-    }
-
-    // write to I2S DMA
     static size_t bytes_written = 0;
-    esp_err_t err = i2s_write(I2S_NUM_0, &buffer, 4*BUFFER_SIZE, &bytes_written, portMAX_DELAY);
 
+    while(1) {
+        // fill buffer with samples
+        for (auto i=0; i<BUFFER_SIZE; i++) {
+            sample = (saw1.next_sample() + saw_sub.next_sample())/2;
+            buffer[i] = (unsigned int)(sample * DAC_MAX_VALUE);
+            buffer[i] = buffer[i] << 8;
+        }
+
+        // write to I2S DMA
+        esp_err_t err = i2s_write(I2S_NUM_0, &buffer, 4*BUFFER_SIZE, &bytes_written, portMAX_DELAY);
+    }
     /*
     "Normally, the i2c_write_bytes function blocks. 
     You can just start up a thread that writes bytes 
@@ -104,6 +113,15 @@ void audio_loop(AudioObject &audio_object) {
     */
 }
 
+#define D 50
 void loop() {
-    audio_loop(saw1);
+    Serial.print("loop() running on core ");
+    Serial.println(xPortGetCoreID());
+    //audio_loop(saw1);
+    delay(D);
+    saw1.set_frequency(349.2);
+    delay(D);
+    saw1.set_frequency(440.0);
+    delay(D);
+    saw1.set_frequency(523.3);
 }
