@@ -17,7 +17,7 @@ void setup_I2S() {
         .mode = I2S_USE_BUILT_IN_DAC,
         .sample_rate = SAMPLE_RATE,
         .bits_per_sample = I2S_BITS_PER_SAMPLE_16BIT, /* the DAC module will only take the 8bits from MSB */
-        .channel_format = I2S_CHANNEL_FMT_RIGHT_LEFT,
+        .channel_format = I2S_CHANNEL_FMT_ALL_RIGHT,
         .communication_format = (i2s_comm_format_t)I2S_COMM_FORMAT_I2S_MSB,
         .intr_alloc_flags = 0, // default interrupt priority
         .dma_buf_count = 2,  // ?? number of linked DMA buffers
@@ -48,16 +48,22 @@ void loop() {
     static float phase {0.0};
     static float phase_increment {float(frequency) / float(SAMPLE_RATE)};
 
-    unsigned int sample = (unsigned int)(phase * DAC_MAX_VALUE);
+    static unsigned int buffer[BUFFER_SIZE];
 
-    phase += phase_increment;
-    if (phase > 1.0) {
-        phase -= 1.0;
+    for (auto i=0; i<BUFFER_SIZE; i++) {
+        buffer[i] = (unsigned int)(phase * DAC_MAX_VALUE);
+        buffer[i] = buffer[i] << 8;
+        //Serial.printf("sample: %u\n\r", buffer[i]);
+
+        phase += phase_increment;
+        if (phase > 1.0) {
+            phase -= 1.0;
+        }
     }
 
     static size_t bytes_written = 0;
-    esp_err_t err = i2s_write(I2S_NUM_0, &sample, 1, &bytes_written, portMAX_DELAY);
-    Serial.printf("err: %d, bytes written: %d\n\r", err, bytes_written);
+    esp_err_t err = i2s_write(I2S_NUM_0, &buffer, 4*BUFFER_SIZE, &bytes_written, portMAX_DELAY);
+    //Serial.printf("err: %d, bytes written: %d\n\r", err, bytes_written);
 
     /*
     "Normally, the i2c_write_bytes function blocks. 
