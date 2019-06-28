@@ -40,6 +40,8 @@ float Saw::next_sample() {
     if (phase > 1.0) {
         phase -= 1.0;
     }
+
+    return sample;
 }
 
 
@@ -96,7 +98,7 @@ void audio_loop(void * parameter) {
     while(1) {
         // fill buffer with samples
         for (auto i=0; i<BUFFER_SIZE; i++) {
-            sample = (saw1.next_sample() + saw_sub.next_sample())/2;
+            sample = saw1.next_sample();
             buffer[i] = (unsigned int)(sample * DAC_MAX_VALUE);
             buffer[i] = buffer[i] << 8;
         }
@@ -113,15 +115,13 @@ void audio_loop(void * parameter) {
     */
 }
 
-#define D 50
+#define D 10
 void loop() {
-    Serial.print("loop() running on core ");
-    Serial.println(xPortGetCoreID());
-    //audio_loop(saw1);
+    static float f {8000.0};
+    saw1.set_frequency(f);
+    f += 10;
+    if (f > 12000.0) {
+        f = 8000.0;
+    }
     delay(D);
-    saw1.set_frequency(349.2);
-    delay(D);
-    saw1.set_frequency(440.0);
-    delay(D);
-    saw1.set_frequency(523.3);
 }
