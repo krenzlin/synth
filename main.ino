@@ -54,6 +54,8 @@ void setup() {
         1,                      /* uxPriority */
         &audio_task,                 /* pxCreatedTask */
         0);                     /* xCoreID */
+
+
 }
 
 void audio_loop(void * parameter) {
@@ -82,4 +84,23 @@ void audio_loop(void * parameter) {
 }
 
 void loop() {
+    vm.stop();
+    vm.note_on(196.0);
+    vm.note_on(392.0);
+    vm.note_on(493.9);
+    vm.note_on(587.3);
+    delay(3200);
+    vm.stop();
+    vm.note_on(196.0);
+    vm.note_on(349.2);
+    vm.note_on(440.0);
+    vm.note_on(523.3);
+    delay(1600);
+    vm.stop();
+    vm.note_on(196.0);
+    vm.note_on(392.0);
+    vm.note_on(523.3);
+    vm.note_on(659.3);
+    delay(1600);
+
 }
