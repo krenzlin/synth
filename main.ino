@@ -20,21 +20,17 @@ void setup_I2S() {
         .channel_format = I2S_CHANNEL_FMT_ALL_RIGHT,
         .communication_format = (i2s_comm_format_t)I2S_COMM_FORMAT_I2S_MSB,
         .intr_alloc_flags = 0, // default interrupt priority
-        .dma_buf_count = 2,  // ?? number of linked DMA buffers
-        // according to https://www.esp32.com/viewtopic.php?t=10140#p41782
-        // DMA uses multiple buffers to be filled (one to be read) and round-robins between them.
+        .dma_buf_count = 2,  // number of DMA buffers (at least 2, round-robin)
         .dma_buf_len = BUFFER_SIZE, // length of each DMA buffer (in samples)
-        //.tx_desc_auto_clear = true,
-        .use_apll = false
+        .use_apll = false,
+        .tx_desc_auto_clear = true,
     };
 
     esp_err_t err = i2s_driver_install(I2S_NUM_0, &i2s_config, 0, NULL);
     Serial.printf("I2S install: %d\nr\r", err);
 
     // important otherwise no sound
-    i2s_set_dac_mode(I2S_DAC_CHANNEL_BOTH_EN);
-    i2s_set_sample_rates(I2S_NUM_0, SAMPLE_RATE);
-    i2s_zero_dma_buffer(I2S_NUM_0);
+    i2s_set_dac_mode(I2S_DAC_CHANNEL_RIGHT_EN);
 }
 
 void setup() {
@@ -59,11 +55,6 @@ void loop() {
         if (phase > 1.0) {
             phase -= 1.0;
         }
-    }
-
-    frequency += 1.0;
-    if (frequency > 1000.0) {
-        frequency = 440.0;
     }
 
     static size_t bytes_written = 0;
