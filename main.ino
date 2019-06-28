@@ -7,12 +7,17 @@
 
 #define I2S_USE_BUILT_IN_DAC (i2s_mode_t)(I2S_MODE_MASTER | I2S_MODE_TX | I2S_MODE_DAC_BUILT_IN)
 
-#define SAMPLE_RATE 44100
-#define BUFFER_SIZE 64
+#define SAMPLE_RATE 96000
+#define BUFFER_SIZE 32
 #define DAC_MAX_VALUE 255.0 // IMPORTANT THAT IT'S A FLOAT, OTHERWISE ALL MATH IS CASTED TO INT
 
 
-class Saw {
+class AudioObject {
+    public:
+        virtual float next_sample();
+};
+
+class Saw : public AudioObject {
     private:
         float frequency;
         float phase;
@@ -75,19 +80,20 @@ void setup() {
 
 }
 
-void loop() {
+void audio_loop(AudioObject &audio_object) {
     static unsigned int buffer[BUFFER_SIZE];
     static float sample {0.0};
 
+    // fill buffer with samples
     for (auto i=0; i<BUFFER_SIZE; i++) {
-        sample = (saw1.next_sample() + saw2.next_sample() + saw3.next_sample()) / 3;
+        sample = audio_object.next_sample();
         buffer[i] = (unsigned int)(sample * DAC_MAX_VALUE);
         buffer[i] = buffer[i] << 8;
     }
 
+    // write to I2S DMA
     static size_t bytes_written = 0;
     esp_err_t err = i2s_write(I2S_NUM_0, &buffer, 4*BUFFER_SIZE, &bytes_written, portMAX_DELAY);
-    //Serial.printf("err: %d, bytes written: %d\n\r", err, bytes_written);
 
     /*
     "Normally, the i2c_write_bytes function blocks. 
@@ -96,4 +102,8 @@ void loop() {
     blocking behaviour will make sure the timing is OK."
     from: https://www.esp32.com/viewtopic.php?t=3168#p14931
     */
+}
+
+void loop() {
+    audio_loop(saw1);
 }
