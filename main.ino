@@ -46,7 +46,7 @@ void setup() {
 void loop() {
     static float frequency {440.0};
     static float phase {0.0};
-    static float phase_increment {float(frequency) / float(SAMPLE_RATE)};
+    float phase_increment {float(frequency) / float(SAMPLE_RATE)};
 
     static unsigned int buffer[BUFFER_SIZE];
 
@@ -59,6 +59,11 @@ void loop() {
         if (phase > 1.0) {
             phase -= 1.0;
         }
+    }
+
+    frequency += 1.0;
+    if (frequency > 1000.0) {
+        frequency = 440.0;
     }
 
     static size_t bytes_written = 0;
