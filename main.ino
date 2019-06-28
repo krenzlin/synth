@@ -12,6 +12,32 @@
 #define DAC_MAX_VALUE 255.0 // IMPORTANT THAT IT'S A FLOAT, OTHERWISE ALL MATH IS CASTED TO INT
 
 
+class Saw {
+    private:
+        float frequency;
+        float phase;
+        float phase_increment;
+
+    public:
+        void set_frequency(float frequency);
+        float next_sample();
+};
+
+void Saw::set_frequency(float frequency) {
+    Saw::frequency = frequency;
+    Saw::phase_increment = frequency / float(SAMPLE_RATE);
+}
+
+float Saw::next_sample() {
+    float sample = phase;
+
+    phase += phase_increment;
+    if (phase > 1.0) {
+        phase -= 1.0;
+    }
+}
+
+
 void setup_I2S() {
     i2s_config_t i2s_config = {
         .mode = I2S_USE_BUILT_IN_DAC,
@@ -33,28 +59,30 @@ void setup_I2S() {
     i2s_set_dac_mode(I2S_DAC_CHANNEL_RIGHT_EN);
 }
 
+Saw saw1;
+Saw saw2;
+Saw saw3;
+
+
 void setup() {
     Serial.begin(115200);
 
     setup_I2S();
+
+    saw1.set_frequency(349.2);  // F
+    saw2.set_frequency(440.0);  // A
+    saw3.set_frequency(523.3);  // C
+
 }
 
 void loop() {
-    static float frequency {440.0};
-    static float phase {0.0};
-    float phase_increment {float(frequency) / float(SAMPLE_RATE)};
-
     static unsigned int buffer[BUFFER_SIZE];
+    static float sample {0.0};
 
     for (auto i=0; i<BUFFER_SIZE; i++) {
-        buffer[i] = (unsigned int)(phase * DAC_MAX_VALUE);
+        sample = (saw1.next_sample() + saw2.next_sample() + saw3.next_sample()) / 3;
+        buffer[i] = (unsigned int)(sample * DAC_MAX_VALUE);
         buffer[i] = buffer[i] << 8;
-        //Serial.printf("sample: %u\n\r", buffer[i]);
-
-        phase += phase_increment;
-        if (phase > 1.0) {
-            phase -= 1.0;
-        }
     }
 
     static size_t bytes_written = 0;
