@@ -1,7 +1,9 @@
 // connect a speaker to PIN 25 and GND (upper right corner)
 #include "driver/i2s.h"
 #include "freertos/portmacro.h"  // needed for 'portMAX_DELAY'
+#include <MIDI.h>
 
+#define LED 2
 
 #define DAC1_GPIO 25
 #define DAC2_GPIO 26
@@ -37,12 +39,31 @@ VoiceManager vm;
 
 TaskHandle_t audio_task;
 
+MIDI_CREATE_DEFAULT_INSTANCE();
+
+void handleNoteOn(byte channel, byte pitch, byte velocity) {
+    digitalWrite(LED, HIGH);
+    vm.note_on(int(pitch), int(velocity));
+    delay(10);
+    digitalWrite(LED, LOW);
+}
+
+void handleNoteOff(byte channel, byte pitch, byte velocity) {
+    vm.note_off(int(pitch), int(velocity));
+}
+
 void setup() {
     Serial.begin(115200);
     Serial.print("setup() running on core ");
     Serial.println(xPortGetCoreID());
 
     setup_I2S();
+
+    pinMode(LED, OUTPUT);
+
+    MIDI.setHandleNoteOn(handleNoteOn);
+    MIDI.setHandleNoteOff(handleNoteOff);
+	MIDI.begin(MIDI_CHANNEL_OMNI);
 
     vm.init();
 
@@ -84,23 +105,5 @@ void audio_loop(void * parameter) {
 }
 
 void loop() {
-    vm.stop();
-    vm.note_on(196.0);
-    vm.note_on(392.0);
-    vm.note_on(493.9);
-    vm.note_on(587.3);
-    delay(3200);
-    vm.stop();
-    vm.note_on(196.0);
-    vm.note_on(349.2);
-    vm.note_on(440.0);
-    vm.note_on(523.3);
-    delay(1600);
-    vm.stop();
-    vm.note_on(196.0);
-    vm.note_on(392.0);
-    vm.note_on(523.3);
-    vm.note_on(659.3);
-    delay(1600);
-
+    MIDI.read();
 }
