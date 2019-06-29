@@ -1,5 +1,6 @@
-#define SAMPLE_RATE 96000
+#define SAMPLE_RATE 44100
 #define MAX_VOICES 16
+#define TUNING 440.0
 
 // base audio class
 class AudioObject {
@@ -31,12 +32,26 @@ class Saw : public AudioObject {
     public:
         void set_frequency(float frequency);
         float next_sample();
+        void on(float frequency);
+        void off();
+
 };
 
 void Saw::set_frequency(float frequency) {
     Saw::frequency = frequency;
     Saw::phase_increment = frequency / float(SAMPLE_RATE);
 }
+
+void Saw::on(float frequency) {
+    set_frequency(frequency);
+    running = true;
+}
+
+
+void Saw::off() {
+    running = false;
+}
+
 
 float Saw::next_sample() {
     if (!running) {
@@ -58,9 +73,12 @@ float Saw::next_sample() {
 class VoiceManager : public AudioObject {
     private:
         Saw voices[MAX_VOICES];
+        float mtof[127];  // pre-calculated MIDI -> frequency
+        Saw* notes[127];
     public:
         void init();
-        void note_on(float frequency);
+        void note_on(int pitch, int velocity);
+        void note_off(int pitch, int velocity);
         float next_sample();
         void stop();
 };
@@ -69,6 +87,10 @@ void VoiceManager::init() {
     for (auto i=0; i<MAX_VOICES; i++) {
         voices[i] = Saw();
         voices[i].running = false;
+    }
+
+    for (int x = 0; x < 127; ++x) {
+        mtof[x] = pow(2.0, (x - 69.0)/12.0) * TUNING;
     }
 }
 
@@ -83,16 +105,24 @@ float VoiceManager::next_sample() {
     return sample;
 }
 
-void VoiceManager::note_on(float frequency) {
+void VoiceManager::note_on(int pitch, int velocity) {
     // find inactive voice
     for (auto &v : voices) {
         if (!v.running) {
-            v.set_frequency(frequency);
-            v.running = true;
+            v.on(mtof[pitch]);
+            notes[pitch] = &v;
             break;
         }
     }
 }
+
+
+void VoiceManager::note_off(int pitch, int velocity) {
+    if (notes[pitch]) {
+        notes[pitch]->off();
+    }
+}
+
 
 void VoiceManager::stop() {
     for (auto &v : voices) {
