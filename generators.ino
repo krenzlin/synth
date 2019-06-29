@@ -9,6 +9,17 @@ class AudioObject {
 };
 
 
+float poly_blep(float p, float dp) {
+    if (p < dp) {
+        p /= dp;
+        return p - p*p/2 - 0.5;
+    } else if (p > 1.0 - dp) {
+        p = (p - 1.0) / dp;
+        return p*p/2 + p + 0.5;
+    }
+    return 0.0;
+}
+
 // sawtooth generator
 // till now a naive modulo implementation
 class Saw : public AudioObject {
@@ -32,7 +43,7 @@ float Saw::next_sample() {
         return 0.0;
     }
 
-    float sample = phase;
+    float sample = phase - poly_blep(phase, phase_increment);
 
     phase += phase_increment;
     if (phase > 1.0) {
