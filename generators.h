@@ -99,3 +99,16 @@ float Sin::next_sample() {
     advance_phase();
     return sample;
 }
+
+
+// naive square ------------------------------
+class Square : public Phasor {
+    public:
+        float next_sample() override;
+};
+
+float Square::next_sample() {
+    float sample = (phase <= 0.5);  // 0 .. 0.5 => 1 & .5 .. 1 => 0
+    advance_phase();
+    return sample;
+}
