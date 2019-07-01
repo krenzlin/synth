@@ -20,7 +20,6 @@ Konrad
 TaskHandle_t audio_task;
 
 
-
 void audio_setup() {
     i2s_config_t i2s_config = {
         .mode = I2S_USE_BUILT_IN_DAC,
@@ -50,9 +49,9 @@ void audio_loop(void* generator) {
         // fill buffer with samples
         for (auto i=0; i<BUFFER_SIZE; i++) {
             sample = ((Generator*)generator)->next_sample();
-            sample = (sample + 1.0) / 2.0;
-            buffer[i] = (unsigned int)(sample * DAC_MAX_VALUE);
-            buffer[i] = buffer[i] << 8;
+            sample = (sample + 1.0) * DAC_MAX_VALUE/2;  // trafo: [-1...+1] => [0...255]
+            buffer[i] = (unsigned int)(sample);
+            buffer[i] = buffer[i] << 8;  // DAC uses only first 8 of the 16bit (MSB)
         }
 
         // write to I2S DMA
