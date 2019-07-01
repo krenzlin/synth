@@ -1,16 +1,9 @@
 #include "generators.h"
 #include "config.h"
 
-// base audio class
-class AudioObject {
-    public:
-        virtual float next_sample();
-        bool running {false};
-};
-
 
 // managing and mixing the available voices
-class VoiceManager : public AudioObject {
+class VoiceManager : public Generator {
     private:
         Saw voices[MAX_VOICES];
         float mtof[127];  // pre-calculated MIDI -> frequency

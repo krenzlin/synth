@@ -1,3 +1,5 @@
+#pragma once
+
 #define DAC_MAX_VALUE 255.0 // IMPORTANT THAT IT'S A FLOAT, OTHERWISE ALL MATH IS CASTED TO INT
 
 // pins
