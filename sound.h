@@ -56,7 +56,7 @@ void audio_loop(void* generator) {
         }
 
         // write to I2S DMA
-        esp_err_t err = i2s_write(I2S_NUM_0, &buffer, 4*BUFFER_SIZE, &bytes_written, portMAX_DELAY);
+        esp_err_t err = i2s_write(I2S_NUM_0, &buffer, sizeof(sample)*BUFFER_SIZE, &bytes_written, portMAX_DELAY);
     }
 }
 

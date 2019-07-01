@@ -6,9 +6,8 @@
 #include "defs.h"
 #include "sound.h"
 
-
+// declare Synth/Audio object in global namespace to keep it alive for the audio thread
 VoiceManager vm;
-
 
 MIDI_CREATE_DEFAULT_INSTANCE();
 
@@ -23,14 +22,27 @@ void handleNoteOff(byte channel, byte pitch, byte velocity) {
     vm.note_off(int(pitch), int(velocity));
 }
 
+void blink(int N) {
+    for (auto i=0; i<N; i++) {
+    digitalWrite(LED, HIGH);
+    delay(100);
+    digitalWrite(LED, LOW);
+    delay(100);
+    }
+}
+
 void setup() {
     pinMode(LED, OUTPUT);
 
+    blink(3);
+
     MIDI.setHandleNoteOn(handleNoteOn);
     MIDI.setHandleNoteOff(handleNoteOff);
-	MIDI.begin(MIDI_CHANNEL_OMNI);
+    MIDI.begin(MIDI_CHANNEL_OMNI);
 
     vm.init();
+    vm.note_on(69, 127);
+    audio(vm);
 }
 
 void loop() {
