@@ -1,6 +1,5 @@
-#define SAMPLE_RATE 44100
-#define MAX_VOICES 16
-#define TUNING 440.0
+#include "generators.h"
+#include "config.h"
 
 // base audio class
 class AudioObject {
@@ -8,65 +7,6 @@ class AudioObject {
         virtual float next_sample();
         bool running {false};
 };
-
-
-float poly_blep(float p, float dp) {
-    if (p < dp) {
-        p /= dp;
-        return p - p*p/2 - 0.5;
-    } else if (p > 1.0 - dp) {
-        p = (p - 1.0) / dp;
-        return p*p/2 + p + 0.5;
-    }
-    return 0.0;
-}
-
-// sawtooth generator
-// till now a naive modulo implementation
-class Saw : public AudioObject {
-    private:
-        float frequency {0.0};
-        float phase {0.0};
-        float phase_increment {0.0};
-
-    public:
-        void set_frequency(float frequency);
-        float next_sample();
-        void on(float frequency);
-        void off();
-
-};
-
-void Saw::set_frequency(float frequency) {
-    Saw::frequency = frequency;
-    Saw::phase_increment = frequency / float(SAMPLE_RATE);
-}
-
-void Saw::on(float frequency) {
-    set_frequency(frequency);
-    running = true;
-}
-
-
-void Saw::off() {
-    running = false;
-}
-
-
-float Saw::next_sample() {
-    if (!running) {
-        return 0.0;
-    }
-
-    float sample = phase - poly_blep(phase, phase_increment);
-
-    phase += phase_increment;
-    if (phase > 1.0) {
-        phase -= 1.0;
-    }
-
-    return sample;
-}
 
 
 // managing and mixing the available voices

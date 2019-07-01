@@ -3,15 +3,8 @@
 #include "freertos/portmacro.h"  // needed for 'portMAX_DELAY'
 #include <MIDI.h>
 
-#define LED 2
-
-#define DAC1_GPIO 25
-#define DAC2_GPIO 26
-
-#define I2S_USE_BUILT_IN_DAC (i2s_mode_t)(I2S_MODE_MASTER | I2S_MODE_TX | I2S_MODE_DAC_BUILT_IN)
-
-#define BUFFER_SIZE 32
-#define DAC_MAX_VALUE 255.0 // IMPORTANT THAT IT'S A FLOAT, OTHERWISE ALL MATH IS CASTED TO INT
+#include "config.h"
+#include "defs.h"
 
 
 void setup_I2S() {
