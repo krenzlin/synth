@@ -20,6 +20,20 @@ float mtof(int note) {
 }
 
 
+float smoothstep(float x) {
+    return x * x * (3.0 - 2.0 * x);
+}
+
+// trafo: [0..1] => [-1..+1]
+inline float zero_one_to_minus_plus(float x) {
+    return 2.0*x - 1.0;
+}
+
+// trafo: [0..1] => [-1..+1]
+inline float minus_plus_to_zero_one(float x) {
+    return (x + 1.0) / 2.0;
+}
+
 // base class Audio Generator ------------------
 class Generator {
     public:
@@ -47,7 +61,7 @@ inline void Phasor::set_frequency(float frequency) {
 
 inline void Phasor::advance_phase() {
     phase += phase_increment;
-    while (phase > 1.0) {
+    if (phase > 1.0) {
         phase -= 1.0;
     }
 }
@@ -109,6 +123,28 @@ class Square : public Phasor {
 
 float Square::next_sample() {
     float sample = (phase <= 0.5);  // 0 .. 0.5 => 1 & .5 .. 1 => 0
+    advance_phase();
+    return sample;
+}
+
+
+// smoothstep sin ------------------------------
+// approx. sin via smoothstep
+// 1. generate triangle wave
+// 2. move so that
+class SmoothSin : public Phasor {
+    public:
+        SmoothSin() {phase = 0.25;}  // move phase so sin starts on zero
+        float next_sample() override;
+};
+
+float SmoothSin::next_sample() {
+    float sample = 2*phase;
+    if (phase > 0.5) {
+        sample = 2.0 - sample;
+    }
+    sample = smoothstep(sample);
+    sample = zero_one_to_minus_plus(sample);
     advance_phase();
     return sample;
 }

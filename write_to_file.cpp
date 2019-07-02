@@ -6,15 +6,15 @@
 
 
 int main() {
-    Saw osc;
+    SmoothSin osc;
     osc.set_frequency(440.0);
 
     float buffer[SAMPLE_RATE];
     
     for (auto i=0; i<SAMPLE_RATE; i++) {
         buffer[i] = osc.next_sample();
-        std::cout << buffer[i] << std::endl;
     }
+    std::cout << "sample rate "  << SAMPLE_RATE << std::endl;
 
     std::FILE* file = std::fopen("generated.raw", "wb");
     std::fwrite(buffer, sizeof(float), SAMPLE_RATE, file);
