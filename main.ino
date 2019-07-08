@@ -41,6 +41,13 @@ void setup() {
     MIDI.begin(MIDI_CHANNEL_OMNI);
 
     vm.init();
+
+
+    audio(vm);
+}
+
+void loop() {
+    MIDI.read();
     vm.note_on(69, 127);
     vm.note_on(71, 127);
     vm.note_on(73, 127);
@@ -48,9 +55,15 @@ void setup() {
     vm.note_on(77, 127);
     vm.note_on(79, 127);
 
-    audio(vm);
-}
+    delay(1000);
 
-void loop() {
-    MIDI.read();
+    vm.note_off(69, 127);
+    vm.note_off(71, 127);
+    vm.note_off(73, 127);
+    vm.note_off(75, 127);
+    vm.note_off(77, 127);
+    vm.note_off(79, 127);
+
+    delay(500);
+
 }

@@ -1,5 +1,7 @@
 #pragma once
 
+#include "ADSR.h"
+
 #include "config.h"
 #include "helper.h"
 
@@ -44,14 +46,32 @@ class Saw : public Phasor {
         float next_sample() override;
         void on(float frequency);
         void off();
-        bool running {false};
+        bool running();
+        void set_ADSR(float attack, float decay, float sustain, float release);
+    private:
+        bool m_gate {false};
+        ADSR m_env;
 };
 
+bool Saw::running() {
+    return m_gate && m_env.getState();
+}
+
+
+void Saw::set_ADSR(float attack, float decay, float sustain, float release) {
+    m_env.setAttackRate(attack);
+    m_env.setDecayRate(decay);
+    m_env.setSustainLevel(sustain);
+    m_env.setReleaseRate(release);
+    m_env.setTargetRatioA(100);
+}
+
 float Saw::next_sample() {
-    if (!running) {
+    if (!running()) {
         return 0.0;
     }
     float sample = m_phase - poly_blep(m_phase, m_phase_increment);
+    sample *= m_env.process();
     sample = zero_one_to_minus_plus(sample);
     advance_phase();
     return sample;
@@ -59,11 +79,14 @@ float Saw::next_sample() {
 
 void Saw::on(float frequency) {
     set_frequency(frequency);
-    running = true;
+    m_env.reset();
+    m_env.gate(true);
+    m_gate = true;
 }
 
 void Saw::off() {
-    running = false;
+    m_env.gate(false);
+    m_gate = false;
 }
 
 
