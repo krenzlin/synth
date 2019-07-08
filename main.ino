@@ -42,6 +42,12 @@ void setup() {
 
     vm.init();
     vm.note_on(69, 127);
+    vm.note_on(71, 127);
+    vm.note_on(73, 127);
+    vm.note_on(75, 127);
+    vm.note_on(77, 127);
+    vm.note_on(79, 127);
+
     audio(vm);
 }
 
