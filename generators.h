@@ -56,11 +56,10 @@ class Phasor : public Generator {
 
 inline void Phasor::set_frequency(float frequency) {
     Phasor::frequency = frequency;
-    Phasor::phase_increment = frequency / SAMPLE_RATE;
 }
 
 inline void Phasor::advance_phase() {
-    phase += phase_increment;
+    phase += frequency / SAMPLE_RATE;
     if (phase > 1.0) {
         phase -= 1.0;
     }
