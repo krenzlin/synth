@@ -15,27 +15,24 @@ class Phasor : public Generator {
     public:
         float next_sample() override;
         void advance_phase();
-        void set_frequency(float frequency);
+        void set_frequency(float frequency) {m_frequency = frequency;}
         
     protected:
-        float frequency {0.0};
-        float phase {0.0};
-        float phase_increment {0.0};
+        float m_frequency {0.0};
+        float m_phase {0.0};
+        float m_phase_increment {0.0};
 };
 
-inline void Phasor::set_frequency(float frequency) {
-    Phasor::frequency = frequency;
-}
-
 inline void Phasor::advance_phase() {
-    phase += frequency / SAMPLE_RATE;
-    if (phase > 1.0) {
-        phase -= 1.0;
+    m_phase_increment = m_frequency / SAMPLE_RATE;
+    m_phase += m_phase_increment;
+    if (m_phase > 1.0) {
+        m_phase -= 1.0;
     }
 }
 
 float Phasor::next_sample() {
-    float sample = phase;
+    float sample = m_phase;
     advance_phase();
     return sample;
 }
@@ -54,7 +51,7 @@ float Saw::next_sample() {
     if (!running) {
         return 0.0;
     }
-    float sample = phase - poly_blep(phase, phase_increment);
+    float sample = m_phase - poly_blep(m_phase, m_phase_increment);
     sample = zero_one_to_minus_plus(sample);
     advance_phase();
     return sample;
@@ -77,7 +74,7 @@ class Sin : public Phasor {
 };
 
 float Sin::next_sample() {
-    float sample = sin(2*M_PI*phase);
+    float sample = sin(2*M_PI*m_phase);
     advance_phase();
     return sample;
 }
@@ -90,7 +87,7 @@ class Square : public Phasor {
 };
 
 float Square::next_sample() {
-    float sample = (phase <= 0.5);  // 0 .. 0.5 => 1 & .5 .. 1 => 0
+    float sample = (m_phase <= 0.5);  // 0 .. 0.5 => 1 & .5 .. 1 => 0
     advance_phase();
     return sample;
 }
@@ -102,13 +99,13 @@ float Square::next_sample() {
 // 2. move so that
 class SmoothSin : public Phasor {
     public:
-        SmoothSin() {phase = 0.25;}  // move phase so sin starts on zero
+        SmoothSin() {m_phase = 0.25;}  // move phase so sin starts on zero
         float next_sample() override;
 };
 
 float SmoothSin::next_sample() {
-    float sample = 2*phase;
-    if (phase > 0.5) {
+    float sample = 2*m_phase;
+    if (m_phase > 0.5) {
         sample = 2.0 - sample;
     }
     sample = smoothstep(sample);
