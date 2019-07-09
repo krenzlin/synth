@@ -19,7 +19,7 @@ class VoiceManager : public Generator {
 void VoiceManager::init() {
     for (auto i=0; i<MAX_VOICES; i++) {
         voices[i] = Saw();
-        voices[i].off();
+        voices[i].note_off();
         voices[i].set_ADSR(0.5*SAMPLE_RATE, 0.2*SAMPLE_RATE, 0.2, 0.2);
     }
 
@@ -30,8 +30,8 @@ void VoiceManager::init() {
 
 float VoiceManager::next_sample() {
     float sample {0.0};
-    for (auto i=0; i<MAX_VOICES; i++) {
-        sample += voices[i].next_sample();
+    for (auto &v : voices) {
+        sample += v.next_sample();
     }
 
     sample /= MAX_VOICES;
@@ -43,7 +43,7 @@ void VoiceManager::note_on(int pitch, int velocity) {
     // find inactive voice
     for (auto &v : voices) {
         if (!v.running()) {
-            v.on(mtof[pitch]);
+            v.note_on(mtof[pitch]);
             notes[pitch] = &v;
             break;
         }
@@ -53,13 +53,13 @@ void VoiceManager::note_on(int pitch, int velocity) {
 
 void VoiceManager::note_off(int pitch, int velocity) {
     if (notes[pitch]) {
-        notes[pitch]->off();
+        notes[pitch]->note_off();
     }
 }
 
 
 void VoiceManager::stop() {
     for (auto &v : voices) {
-        v.off();
+        v.note_off();
     }
 }

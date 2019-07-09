@@ -40,12 +40,12 @@ float Phasor::next_sample() {
 }
 
 
-// PolyBLEP Sawtooth ----------------------------
-class Saw : public Phasor {
+// Envelope Base Class
+class Envelope {
     public:
-        float next_sample() override;
-        void on(float frequency);
-        void off();
+        float envelope();
+        void env_on();
+        void env_off();
         bool running();
         void set_ADSR(float attack, float decay, float sustain, float release);
     private:
@@ -53,12 +53,26 @@ class Saw : public Phasor {
         ADSR m_env;
 };
 
-bool Saw::running() {
+float Envelope::envelope() {
+    return m_env.process();
+}
+
+void Envelope::env_on() {
+    m_env.reset();
+    m_env.gate(true);
+    m_gate = true;
+}
+
+void Envelope::env_off() {
+    m_env.gate(false);
+    m_gate = false;
+}
+
+bool Envelope::running() {
     return m_gate || m_env.getState();
 }
 
-
-void Saw::set_ADSR(float attack, float decay, float sustain, float release) {
+void Envelope::set_ADSR(float attack, float decay, float sustain, float release) {
     m_env.setAttackRate(attack);
     m_env.setDecayRate(decay);
     m_env.setSustainLevel(sustain);
@@ -66,27 +80,33 @@ void Saw::set_ADSR(float attack, float decay, float sustain, float release) {
     m_env.setTargetRatioA(100);
 }
 
+
+// PolyBLEP Sawtooth ----------------------------
+class Saw : public Phasor, public Envelope {
+    public:
+        float next_sample() override;
+        void note_on(float frequency);
+        void note_off();
+};
+
 float Saw::next_sample() {
-    if (!running()) {
+    if (!this->running()) {
         return 0.0;
     }
     float sample = m_phase - poly_blep(m_phase, m_phase_increment);
     sample = zero_one_to_minus_plus(sample);
-    sample *= m_env.process();
-    advance_phase();
+    sample *= this->envelope();
+    this->advance_phase();
     return sample;
 };
 
-void Saw::on(float frequency) {
-    set_frequency(frequency);
-    m_env.reset();
-    m_env.gate(true);
-    m_gate = true;
+void Saw::note_on(float frequency) {
+    this->set_frequency(frequency);
+    this->env_on();
 }
 
-void Saw::off() {
-    m_env.gate(false);
-    m_gate = false;
+void Saw::note_off() {
+    this->env_off();
 }
 
 

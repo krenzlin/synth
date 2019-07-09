@@ -12,7 +12,7 @@ float simulate_8bit(float value) {
 
 int main() {
     Saw osc;
-    osc.on(440.0);
+    osc.note_on(440.0);
     osc.set_ADSR(0.5*SAMPLE_RATE, 0.2*SAMPLE_RATE, 0.3, 0.5*SAMPLE_RATE);
 
     float sample {0.0};
@@ -27,7 +27,7 @@ int main() {
     }
     std::fwrite(buffer, sizeof(float), SAMPLE_RATE, file);
 
-    osc.off();
+    osc.note_off();
     for (auto i=0; i<SAMPLE_RATE; i++) {
         buffer[i] = osc.next_sample();
     }
