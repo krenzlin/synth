@@ -54,7 +54,7 @@ class Saw : public Phasor {
 };
 
 bool Saw::running() {
-    return m_gate && m_env.getState();
+    return m_gate || m_env.getState();
 }
 
 
@@ -71,8 +71,8 @@ float Saw::next_sample() {
         return 0.0;
     }
     float sample = m_phase - poly_blep(m_phase, m_phase_increment);
-    sample *= m_env.process();
     sample = zero_one_to_minus_plus(sample);
+    sample *= m_env.process();
     advance_phase();
     return sample;
 };
