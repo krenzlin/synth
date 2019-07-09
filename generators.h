@@ -81,6 +81,21 @@ void Envelope::set_ADSR(float attack, float decay, float sustain, float release)
 }
 
 
+class MIDI: public Phasor, public Envelope {
+    public:
+        void note_on(float frequency);
+        void note_off();
+};
+
+void MIDI::note_on(float frequency) {
+    this->set_frequency(frequency);
+    this->env_on();
+}
+
+void MIDI::note_off() {
+    this->env_off();
+}
+
 // PolyBLEP Sawtooth ----------------------------
 class Saw : public Phasor, public Envelope {
     public:
@@ -109,7 +124,6 @@ void Saw::note_off() {
     this->env_off();
 }
 
-
 // naive sin ------------------------------
 class Sin : public Phasor {
     public:
@@ -136,23 +150,16 @@ float Square::next_sample() {
 }
 
 
-// smoothstep sin ------------------------------
-// approx. sin via smoothstep
-// 1. generate triangle wave
-// 2. move so that
-class SmoothSin : public Phasor {
+// wavetable sin
+class WavetableSine: public MIDI {
     public:
-        SmoothSin() {m_phase = 0.25;}  // move phase so sin starts on zero
         float next_sample() override;
 };
 
-float SmoothSin::next_sample() {
-    float sample = 2*m_phase;
-    if (m_phase > 0.5) {
-        sample = 2.0 - sample;
-    }
-    sample = smoothstep(sample);
-    sample = zero_one_to_minus_plus(sample);
-    advance_phase();
+float WavetableSine::next_sample() {
+    int index = int(this->m_phase * float(WAVETABLE_SIZE));
+    float sample = sin_table[index];
+    sample *= this->envelope();
+    this->advance_phase();
     return sample;
 }

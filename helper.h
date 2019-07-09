@@ -33,3 +33,14 @@ inline float zero_one_to_minus_plus(float x) {
 inline float minus_plus_to_zero_one(float x) {
     return (x + 1.0) / 2.0;
 }
+
+
+float sin_table[WAVETABLE_SIZE];
+void create_wavetable() {
+    constexpr float increment {M_PI*2.0 / (WAVETABLE_SIZE-1)}; // incrementing SIZE-1 times
+    float phase {0.0};
+    for (auto i = 0; i < WAVETABLE_SIZE; ++i) {
+        sin_table[i] = sin(phase);
+        phase += increment;
+    }
+}

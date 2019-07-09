@@ -11,8 +11,9 @@ float simulate_8bit(float value) {
 
 
 int main() {
-    Saw osc;
-    osc.note_on(440.0);
+    create_wavetable();
+    WavetableSine osc;
+    osc.note_on(428.0);
     osc.set_ADSR(0.5*SAMPLE_RATE, 0.2*SAMPLE_RATE, 0.3, 0.5*SAMPLE_RATE);
 
     float sample {0.0};
@@ -29,7 +30,8 @@ int main() {
 
     osc.note_off();
     for (auto i=0; i<SAMPLE_RATE; i++) {
-        buffer[i] = osc.next_sample();
+        sample = osc.next_sample();
+        buffer[i] = simulate_8bit(sample);
     }
 
 
