@@ -6,6 +6,7 @@
 #include <math.h>
 
 #include "helper.h"
+#include "generators.h"
 
 
 TEST_CASE( "[zero_one_to_minus_plus] transform [0..1] to [-1..+1]") {
@@ -27,6 +28,34 @@ TEST_CASE( "[fast_sine] wavetable sine approx. within 1%") {
 
         CAPTURE(value);
         CHECK(doctest::Approx(approx).epsilon(0.01) == correct);
+    }
+}
+
+TEST_CASE( "[generators::Phasor] test implementation") {
+    const int steps = 100;
+    Phasor osc;
+    osc.set_frequency(SAMPLE_RATE / float(steps));
+
+    for (auto i=0; i < steps; i++) {
+        float value = float(i) / float(steps);
+
+        CAPTURE(i);
+        CHECK(osc.next_sample() == doctest::Approx(value));
+    }
+}
+
+
+TEST_CASE( "[generators::Saw] test implementation") {
+    const int steps = 100;
+    Saw osc;
+    osc.note_on(SAMPLE_RATE / float(steps));
+
+    for (auto i=0; i < steps; i++) {
+        float value = float(i) / float(steps);
+        value = zero_one_to_minus_plus(value);
+
+        CAPTURE(i);
+        CHECK(osc.next_sample() == doctest::Approx(value));
     }
 }
 
