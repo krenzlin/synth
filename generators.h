@@ -81,36 +81,42 @@ void Envelope::set_ADSR(float attack, float decay, float sustain, float release)
 }
 
 
-class MIDI: public Phasor, public Envelope {
+class Voice: public Phasor, public Envelope {
     public:
         void note_on(float frequency);
         void note_off();
+        float next_sample() override;
+    protected:
+        virtual float compute_sample(float phase) = 0;
 };
 
-void MIDI::note_on(float frequency) {
+void Voice::note_on(float frequency) {
     this->set_frequency(frequency);
     this->env_on();
 }
 
-void MIDI::note_off() {
+void Voice::note_off() {
     this->env_off();
 }
 
-// PolyBLEP Sawtooth ----------------------------
-class Saw : public MIDI {
-    public:
-        float next_sample() override;
-};
-
-float Saw::next_sample() {
+float Voice::next_sample() {
     if (!this->running()) {
         return 0.0;
     }
-    float sample = m_phase - poly_blep(m_phase, m_phase_increment);
-    sample = zero_one_to_minus_plus(sample);
+    float sample = this->compute_sample(m_phase);
     sample *= this->envelope();
     this->advance_phase();
     return sample;
+}
+
+// PolyBLEP Sawtooth ----------------------------
+class Saw : public Voice {
+    protected:
+        virtual float compute_sample(float phase) {
+            float sample = phase - poly_blep(phase, m_phase_increment);
+            sample = zero_one_to_minus_plus(sample);
+            return sample;
+        }
 };
 
 
@@ -141,14 +147,9 @@ float Square::next_sample() {
 
 
 // wavetable sin
-class WavetableSine: public MIDI {
-    public:
-        float next_sample() override;
+class WavetableSine: public Voice {
+    protected:
+        virtual float compute_sample(float phase) {
+            return fast_sine(phase);
+        }
 };
-
-float WavetableSine::next_sample() {
-    float sample = fast_sine(m_phase);
-    sample *= this->envelope();
-    this->advance_phase();
-    return sample;
-}
