@@ -157,8 +157,7 @@ class WavetableSine: public MIDI {
 };
 
 float WavetableSine::next_sample() {
-    int index = int(this->m_phase * float(WAVETABLE_SIZE));
-    float sample = sin_table[index];
+    float sample = fast_sine(m_phase);
     sample *= this->envelope();
     this->advance_phase();
     return sample;
