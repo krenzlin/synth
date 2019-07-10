@@ -2,6 +2,8 @@
 
 #include <math.h>
 
+#include "config.h"
+
 // helper functions ------------------------------
 float poly_blep(float p, float dp) {
     if (p < dp) {
@@ -28,12 +30,6 @@ inline float zero_one_to_minus_plus(float x) {
     //return (x - 0.5) * 2.0;
     return 2.0*x - 1.0;
 }
-
-// trafo: [0..1] => [-1..+1]
-inline float minus_plus_to_zero_one(float x) {
-    return (x + 1.0) / 2.0;
-}
-
 
 float sin_table[WAVETABLE_SIZE];
 void create_wavetable() {
