@@ -97,11 +97,9 @@ void MIDI::note_off() {
 }
 
 // PolyBLEP Sawtooth ----------------------------
-class Saw : public Phasor, public Envelope {
+class Saw : public MIDI {
     public:
         float next_sample() override;
-        void note_on(float frequency);
-        void note_off();
 };
 
 float Saw::next_sample() {
@@ -115,14 +113,6 @@ float Saw::next_sample() {
     return sample;
 };
 
-void Saw::note_on(float frequency) {
-    this->set_frequency(frequency);
-    this->env_on();
-}
-
-void Saw::note_off() {
-    this->env_off();
-}
 
 // naive sin ------------------------------
 class Sin : public Phasor {
@@ -132,7 +122,7 @@ class Sin : public Phasor {
 
 float Sin::next_sample() {
     float sample = sin(2*M_PI*m_phase);
-    advance_phase();
+    this->advance_phase();
     return sample;
 }
 
@@ -145,7 +135,7 @@ class Square : public Phasor {
 
 float Square::next_sample() {
     float sample = (m_phase <= 0.5);  // 0 .. 0.5 => 1 & .5 .. 1 => 0
-    advance_phase();
+    this->advance_phase();
     return sample;
 }
 
