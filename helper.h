@@ -40,3 +40,9 @@ void create_wavetable() {
         phase += increment;
     }
 }
+
+// expects phase to be between 0.0 and 1.0
+float fast_sine(float phase) {
+    int index = int(phase * float(WAVETABLE_SIZE));
+    return sin_table[index];
+}
