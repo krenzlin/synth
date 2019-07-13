@@ -81,16 +81,18 @@ void Envelope::set_ADSR(float attack, float decay, float sustain, float release)
 }
 
 
+// Voice ---------
 class Voice: public Phasor, public Envelope {
     public:
         void note_on(float frequency);
         void note_off();
         float next_sample() override;
-    protected:
+    private:
         virtual float compute_sample(float phase) = 0;
 };
 
 void Voice::note_on(float frequency) {
+    m_phase = 0.0;
     this->set_frequency(frequency);
     this->env_on();
 }
@@ -109,9 +111,10 @@ float Voice::next_sample() {
     return sample;
 }
 
+
 // PolyBLEP Sawtooth ----------------------------
 class Saw : public Voice {
-    protected:
+    private:
         virtual float compute_sample(float phase) {
             float sample = phase - poly_blep(phase, m_phase_increment);
             sample = zero_one_to_minus_plus(sample);
@@ -121,34 +124,27 @@ class Saw : public Voice {
 
 
 // naive sin ------------------------------
-class Sin : public Phasor {
-    public:
-        float next_sample() override;
+class Sin : public Voice {
+    private:
+        virtual float compute_sample(float phase) {
+            return sin(2*M_PI*phase);
+        }
 };
-
-float Sin::next_sample() {
-    float sample = sin(2*M_PI*m_phase);
-    this->advance_phase();
-    return sample;
-}
 
 
 // naive square ------------------------------
-class Square : public Phasor {
-    public:
-        float next_sample() override;
+class Square : public Voice {
+    private:
+        virtual float compute_sample(float phase) {
+            float sample = (phase <= 0.5);
+            return zero_one_to_minus_plus(sample);
+        }
 };
-
-float Square::next_sample() {
-    float sample = (m_phase <= 0.5);  // 0 .. 0.5 => 1 & .5 .. 1 => 0
-    this->advance_phase();
-    return sample;
-}
 
 
 // wavetable sin
 class WavetableSine: public Voice {
-    protected:
+    private:
         virtual float compute_sample(float phase) {
             return fast_sine(phase);
         }
