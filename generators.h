@@ -149,3 +149,78 @@ class WavetableSine: public Voice {
             return fast_sine(phase);
         }
 };
+
+
+// managing and mixing the available voices
+template<typename T>
+class VoiceManager : public Generator {
+    private:
+        T voices[MAX_VOICES];
+        float mtof[127];  // pre-calculated MIDI -> frequency
+        T* notes[127];
+    public:
+        void init();
+        void note_on(int pitch, int velocity);
+        void note_off(int pitch, int velocity);
+        float next_sample();
+        void stop();
+        void set_ADSR(float attack, float decay, float sustain, float release);
+};
+
+template<typename T>
+void VoiceManager<T>::init() {
+    for (auto &voice : voices) {
+        voice = T();
+        voice.note_off();
+        voice.set_ADSR(0.5, 0.2, 0.2, 0.2);
+    }
+
+    for (int x = 0; x < 127; ++x) {
+        mtof[x] = pow(2.0, (x - 69.0)/12.0) * TUNING;
+    }
+}
+
+template<typename T>
+float VoiceManager<T>::next_sample() {
+    float sample {0.0};
+    for (auto &voice : voices) {
+        sample += voice.next_sample();
+    }
+
+    sample /= float(MAX_VOICES);
+
+    return sample;
+}
+
+template<typename T>
+void VoiceManager<T>::note_on(int pitch, int velocity) {
+    // find inactive voice
+    for (auto &voice : voices) {
+        if (!voice.running()) {
+            voice.note_on(mtof[pitch]);
+            notes[pitch] = &voice;
+            break;
+        }
+    }
+}
+
+template<typename T>
+void VoiceManager<T>::note_off(int pitch, int velocity) {
+    if (notes[pitch]) {
+        notes[pitch]->note_off();
+    }
+}
+
+template<typename T>
+void VoiceManager<T>::stop() {
+    for (auto &voice : voices) {
+        voice.note_off();
+    }
+}
+
+template<typename T>
+void VoiceManager<T>::set_ADSR(float attack, float decay, float sustain, float release) {
+    for (auto &voice : voices) {
+        voice.set_ADSR(attack, decay, sustain, release);
+    }
+}
