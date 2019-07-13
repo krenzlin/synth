@@ -26,7 +26,7 @@ class Phasor : public Generator {
 };
 
 inline void Phasor::advance_phase() {
-    m_phase_increment = m_frequency / SAMPLE_RATE;
+    m_phase_increment = m_frequency / config::SAMPLE_RATE;
     m_phase += m_phase_increment;
     if (m_phase > 1.0) {
         m_phase -= 1.0;
@@ -73,10 +73,10 @@ bool Envelope::running() {
 }
 
 void Envelope::set_ADSR(float attack, float decay, float sustain, float release) {
-    m_env.setAttackRate(attack * SAMPLE_RATE);
-    m_env.setDecayRate(decay * SAMPLE_RATE);
+    m_env.setAttackRate(attack * config::SAMPLE_RATE);
+    m_env.setDecayRate(decay * config::SAMPLE_RATE);
     m_env.setSustainLevel(sustain);
-    m_env.setReleaseRate(release * SAMPLE_RATE);
+    m_env.setReleaseRate(release * config::SAMPLE_RATE);
     m_env.setTargetRatioA(100);
 }
 
@@ -155,7 +155,7 @@ class WavetableSine: public Voice {
 template<typename T>
 class VoiceManager : public Generator {
     private:
-        T voices[MAX_VOICES];
+        T voices[config::MAX_VOICES];
         float mtof[127];  // pre-calculated MIDI -> frequency
         T* notes[127];
     public:
@@ -176,7 +176,7 @@ void VoiceManager<T>::init() {
     }
 
     for (int x = 0; x < 127; ++x) {
-        mtof[x] = pow(2.0, (x - 69.0)/12.0) * TUNING;
+        mtof[x] = pow(2.0, (x - 69.0)/12.0) * config::TUNING;
     }
 }
 
@@ -187,7 +187,7 @@ float VoiceManager<T>::next_sample() {
         sample += voice.next_sample();
     }
 
-    sample /= float(MAX_VOICES);
+    sample /= float(config::MAX_VOICES);
 
     return sample;
 }

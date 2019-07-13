@@ -17,7 +17,7 @@ float poly_blep(float p, float dp) {
 }
 
 float mtof(int note) {
-    return pow(2.0, (note - 69.0)/12.0) * TUNING;
+    return pow(2.0, (note - 69.0)/12.0) * config::TUNING;
 }
 
 
@@ -31,11 +31,11 @@ inline float zero_one_to_minus_plus(float x) {
     return 2.0*x - 1.0;
 }
 
-float sin_table[WAVETABLE_SIZE];
+float sin_table[config::WAVETABLE_SIZE];
 void create_wavetable() {
-    constexpr float increment {M_PI*2.0 / (WAVETABLE_SIZE-1)}; // incrementing SIZE-1 times
+    constexpr float increment {M_PI*2.0 / (config::WAVETABLE_SIZE-1)}; // incrementing SIZE-1 times
     float phase {0.0};
-    for (auto i = 0; i < WAVETABLE_SIZE; ++i) {
+    for (auto i = 0; i < config::WAVETABLE_SIZE; ++i) {
         sin_table[i] = sin(phase);
         phase += increment;
     }
@@ -43,6 +43,6 @@ void create_wavetable() {
 
 // expects phase to be between 0.0 and 1.0
 float fast_sine(float phase) {
-    int index = int(phase * float(WAVETABLE_SIZE));
+    int index = int(phase * float(config::WAVETABLE_SIZE));
     return sin_table[index];
 }
