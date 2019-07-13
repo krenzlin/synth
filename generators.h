@@ -73,10 +73,10 @@ bool Envelope::running() {
 }
 
 void Envelope::set_ADSR(float attack, float decay, float sustain, float release) {
-    m_env.setAttackRate(attack);
-    m_env.setDecayRate(decay);
+    m_env.setAttackRate(attack * SAMPLE_RATE);
+    m_env.setDecayRate(decay * SAMPLE_RATE);
     m_env.setSustainLevel(sustain);
-    m_env.setReleaseRate(release);
+    m_env.setReleaseRate(release * SAMPLE_RATE);
     m_env.setTargetRatioA(100);
 }
 
