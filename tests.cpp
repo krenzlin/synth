@@ -34,7 +34,7 @@ TEST_CASE( "[fast_sine] wavetable sine approx. within 1%") {
 TEST_CASE( "[generators::Phasor] test implementation") {
     const int steps = 100;
     Phasor osc;
-    osc.set_frequency(SAMPLE_RATE / float(steps));
+    osc.frequency = config::SAMPLE_RATE / float(steps);
 
     for (auto i=0; i < steps; i++) {
         float value = float(i) / float(steps);
@@ -48,7 +48,7 @@ TEST_CASE( "[generators::Phasor] test implementation") {
 TEST_CASE( "[generators::Saw] test implementation") {
     const int steps = 100;
     Saw osc;
-    osc.note_on(SAMPLE_RATE / float(steps));
+    osc.note_on(config::SAMPLE_RATE / float(steps));
 
     for (auto i=0; i < steps; i++) {
         float value = float(i) / float(steps);
@@ -57,6 +57,13 @@ TEST_CASE( "[generators::Saw] test implementation") {
         CAPTURE(i);
         CHECK(osc.next_sample() == doctest::Approx(value));
     }
+}
+
+TEST_CASE( "[generators::Voice] test running status") {
+    Voice voice;
+    CHECK(voice.running() == false);
+    voice.note_on(440.0);
+    CHECK(voice.running() == true);
 }
 
 #endif // ARDUINO
