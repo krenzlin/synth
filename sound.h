@@ -23,13 +23,13 @@ TaskHandle_t audio_task;
 void audio_setup() {
     i2s_config_t i2s_config = {
         .mode = I2S_USE_BUILT_IN_DAC,
-        .sample_rate = SAMPLE_RATE,
+        .sample_rate = config::SAMPLE_RATE,
         .bits_per_sample = I2S_BITS_PER_SAMPLE_16BIT, /* the DAC module will only take the 8bits from MSB */
         .channel_format = I2S_CHANNEL_FMT_ALL_RIGHT,
         .communication_format = (i2s_comm_format_t)I2S_COMM_FORMAT_I2S_MSB,
         .intr_alloc_flags = 0, // default interrupt priority
         .dma_buf_count = 2,  // number of DMA buffers (at least 2, round-robin)
-        .dma_buf_len = BUFFER_SIZE, // length of each DMA buffer (in samples)
+        .dma_buf_len = config::BUFFER_SIZE, // length of each DMA buffer (in samples)
         .use_apll = false,
         .tx_desc_auto_clear = true,
     };
@@ -41,13 +41,13 @@ void audio_setup() {
 }
 
 void audio_loop(void* generator) {
-    static unsigned int buffer[BUFFER_SIZE];
+    static unsigned int buffer[config::BUFFER_SIZE];
     static float sample {0.0};
     static size_t bytes_written = 0;
 
     while(1) {
         // fill buffer with samples
-        for (auto i=0; i<BUFFER_SIZE; i++) {
+        for (auto i=0; i<config::BUFFER_SIZE; i++) {
             sample = ((Generator*)generator)->next_sample();
             sample = (sample + 1.0) * DAC_MAX_VALUE/2;  // trafo: [-1...+1] => [0...255]
             buffer[i] = (unsigned int)(sample);
@@ -55,7 +55,7 @@ void audio_loop(void* generator) {
         }
 
         // write to I2S DMA
-        esp_err_t err = i2s_write(I2S_NUM_0, &buffer, sizeof(sample)*BUFFER_SIZE, &bytes_written, portMAX_DELAY);
+        esp_err_t err = i2s_write(I2S_NUM_0, &buffer, sizeof(sample)*config::BUFFER_SIZE, &bytes_written, portMAX_DELAY);
     }
 }
 
