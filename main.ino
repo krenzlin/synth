@@ -7,14 +7,13 @@
 #include "sound.h"
 
 // declare Synth/Audio object in global namespace to keep it alive for the audio thread
-VoiceManager vm;
+VoiceManager<WavetableSine> vm;
 
 MIDI_CREATE_DEFAULT_INSTANCE();
 
 void handleNoteOn(byte channel, byte pitch, byte velocity) {
     digitalWrite(LED, HIGH);
     vm.note_on(int(pitch), int(velocity));
-    delay(10);
     digitalWrite(LED, LOW);
 }
 
@@ -34,7 +33,9 @@ void blink(int N) {
 void setup() {
     pinMode(LED, OUTPUT);
 
-    blink(3);
+    blink(2);
+    create_wavetable();
+    blink(1);
 
     MIDI.setHandleNoteOn(handleNoteOn);
     MIDI.setHandleNoteOff(handleNoteOff);
@@ -42,28 +43,17 @@ void setup() {
 
     vm.init();
 
-
     audio(vm);
 }
 
 void loop() {
     MIDI.read();
-    vm.note_on(69, 127);
-    vm.note_on(71, 127);
-    vm.note_on(73, 127);
-    vm.note_on(75, 127);
-    vm.note_on(77, 127);
-    vm.note_on(79, 127);
-
-    delay(1000);
-
-    vm.note_off(69, 127);
-    vm.note_off(71, 127);
-    vm.note_off(73, 127);
-    vm.note_off(75, 127);
-    vm.note_off(77, 127);
-    vm.note_off(79, 127);
-
-    delay(500);
-
+    for (auto i=0; i<10; i++) {
+        float decay = float(i) / 20.0;
+        vm.set_ADSR(0.01, decay, 0.0, 0.0);
+        vm.note_on(40, 127);
+        delay(500);
+        vm.note_off(40, 127);
+        delay(100);
+    }
 }
