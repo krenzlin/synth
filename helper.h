@@ -46,3 +46,29 @@ float fast_sine(float phase) {
     int index = int(phase * float(config::WAVETABLE_SIZE));
     return sin_table[index];
 }
+
+
+/* Fast random implementation [-1..+1]
+see https://en.wikipedia.org/wiki/Lehmer_random_number_generator
+
+X_k+1 = a * X_k mod m
+
+m = 2^31 − 1 = 2,147,483,647 (a Mersenne prime M31)
+a = 7^5 = 16,807
+
+"Five years later, we see no need to alter our response other than to suggest the use of the multiplier a = 48271 in place of 16807."
+"For now, we feel comfortable continuing to use a = 16807."
+a = 48271
+
+Type int of random_seed and a is important as the cast to integer acts as the modulo.
+First divide by m and then floor result.
+
+*/
+static int random_seed {1};
+float fast_rand_float() {
+    constexpr int a = 16807;
+    constexpr float m_1 = 4.6566129e-010f; // 1/(2^31-1) = 1/2147483647
+
+    random_seed *= a;
+    return (float)random_seed * m_1;
+}

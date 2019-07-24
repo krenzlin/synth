@@ -133,6 +133,15 @@ class WavetableSine: public Voice {
 };
 
 
+// wavetable sin
+class Noise: public Voice {
+    private:
+        virtual float compute_sample(float phase) {
+            return fast_rand_float();
+        }
+};
+
+
 // managing and mixing the available voices
 template<typename T>
 class VoiceManager : public Generator {
