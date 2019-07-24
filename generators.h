@@ -18,6 +18,7 @@ class Phasor : public Generator {
         float next_sample() override;
         void advance_phase();
         float frequency {0.0};
+    protected:
         float m_phase {0.0};
         float m_phase_increment {0.0};
 };

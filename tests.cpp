@@ -8,7 +8,6 @@
 #include "helper.h"
 #include "generators.h"
 
-
 TEST_CASE( "[zero_one_to_minus_plus] transform [0..1] to [-1..+1]") {
     CHECK( zero_one_to_minus_plus(0) == -1 );
     CHECK( zero_one_to_minus_plus(1) == +1 );
@@ -68,16 +67,18 @@ TEST_CASE( "[generators::Voice] test running status") {
 
 TEST_CASE( "[generators::Voice] set parameters") {
     Voice voice;
-    CHECK(voice.m_phase == 0.0);
-
     VoiceParams vp;
-    vp.phase = 0.25;
+
+    vp.phase = 0.0;
     voice.set_params(vp);
-
-    CHECK(voice.m_phase == 0.0);
-
     voice.note_on(440.0);
-    CHECK(voice.m_phase == 0.25);
+    CHECK(voice.next_sample() == -1.0);
+
+    // start half-way through cycle
+    vp.phase = 0.5;
+    voice.set_params(vp);
+    voice.note_on(440.0);
+    CHECK(voice.next_sample() == 0.0);
 
 }
 
