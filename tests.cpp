@@ -66,4 +66,19 @@ TEST_CASE( "[generators::Voice] test running status") {
     CHECK(voice.running() == true);
 }
 
+TEST_CASE( "[generators::Voice] set parameters") {
+    Voice voice;
+    CHECK(voice.m_phase == 0.0);
+
+    VoiceParams vp;
+    vp.phase = 0.25;
+    voice.set_params(vp);
+
+    CHECK(voice.m_phase == 0.0);
+
+    voice.note_on(440.0);
+    CHECK(voice.m_phase == 0.25);
+
+}
+
 #endif // ARDUINO

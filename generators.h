@@ -18,8 +18,6 @@ class Phasor : public Generator {
         float next_sample() override;
         void advance_phase();
         float frequency {0.0};
-        
-    protected:
         float m_phase {0.0};
         float m_phase_increment {0.0};
 };
@@ -38,6 +36,10 @@ float Phasor::next_sample() {
     return sample;
 }
 
+struct VoiceParams
+{
+    float phase {0.0}; // start phase [0..1]
+};
 
 // Voice base class
 class Voice: public Phasor {
@@ -47,13 +49,15 @@ class Voice: public Phasor {
         float next_sample() override;
         bool running();
         void set_ADSR(float attack, float decay, float sustain, float release);
+        void set_params(VoiceParams params) {m_params = params;};
     private:
         virtual float compute_sample(float phase);
         ADSR m_env;
+        VoiceParams m_params;
 };
 
 void Voice::note_on(float frequency) {
-    m_phase = 0.0;
+    m_phase = m_params.phase;
     this->frequency = frequency;
     m_env.reset();
     m_env.gate(true);
@@ -137,7 +141,7 @@ class VoiceManager : public Generator {
         T* notes[127];
     public:
         void init();
-        void note_on(int pitch, int velocity);
+        void note_on(int pitch, int velocity, VoiceParams params);
         void note_off(int pitch, int velocity);
         float next_sample();
         void stop();
@@ -149,7 +153,6 @@ void VoiceManager<T>::init() {
     for (auto &voice : voices) {
         voice = T();
         voice.note_off();
-        voice.set_ADSR(0.5, 0.2, 0.2, 0.2);
     }
 
     for (int x = 0; x < 127; ++x) {
@@ -170,10 +173,11 @@ float VoiceManager<T>::next_sample() {
 }
 
 template<typename T>
-void VoiceManager<T>::note_on(int pitch, int velocity) {
+void VoiceManager<T>::note_on(int pitch, int velocity, VoiceParams params) {
     // find inactive voice
     for (auto &voice : voices) {
         if (!voice.running()) {
+            voice.set_params(params);
             voice.note_on(mtof[pitch]);
             notes[pitch] = &voice;
             break;
