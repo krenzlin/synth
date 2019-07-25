@@ -135,7 +135,7 @@ class WavetableSine: public Voice {
 // wavetable sin
 class Noise: public Voice {
     private:
-        virtual float compute_sample(float phase) {
+        virtual float compute_sample(float /* phase - unused */) {
             return fast_rand_float();
         }
 };
@@ -184,12 +184,12 @@ float VoiceManager<T>::next_sample() {
 
 template<typename T>
 void VoiceManager<T>::note_on(int pitch, int velocity, VoiceParams params) {
+    // note already playing?
     if (notes[pitch] != nullptr) {
         notes[pitch]->set_params(params);
         notes[pitch]->note_on(mtof[pitch]);
+    // no, find inactive voice
     } else {
-
-        // find inactive voice
         for (auto &voice : voices) {
             if (!voice.running()) {
                 voice.set_params(params);
