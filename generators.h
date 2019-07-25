@@ -103,16 +103,6 @@ class Saw : public Voice {
         }
 };
 
-
-// naive sin ------------------------------
-class Sin : public Voice {
-    private:
-        virtual float compute_sample(float phase) {
-            return sin(2*M_PI*phase);
-        }
-};
-
-
 // naive square ------------------------------
 class Square : public Voice {
     private:
@@ -124,7 +114,7 @@ class Square : public Voice {
 
 
 // wavetable sin
-class WavetableSine: public Voice {
+class Sine: public Voice {
     private:
         virtual float compute_sample(float phase) {
             return fast_sine(phase);
