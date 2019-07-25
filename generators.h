@@ -37,8 +37,7 @@ float Phasor::next_sample() {
     return sample;
 }
 
-struct VoiceParams
-{
+struct VoiceParams {
     float phase {0.0}; // start phase [0..1]
 };
 
@@ -154,6 +153,7 @@ class VoiceManager : public Generator {
         void note_on(int pitch, int velocity, VoiceParams params);
         void note_off(int pitch, int velocity);
         float next_sample();
+        int running_voices();
         void stop();
         void set_ADSR(float attack, float decay, float sustain, float release);
 };
@@ -184,13 +184,19 @@ float VoiceManager<T>::next_sample() {
 
 template<typename T>
 void VoiceManager<T>::note_on(int pitch, int velocity, VoiceParams params) {
-    // find inactive voice
-    for (auto &voice : voices) {
-        if (!voice.running()) {
-            voice.set_params(params);
-            voice.note_on(mtof[pitch]);
-            notes[pitch] = &voice;
-            break;
+    if (notes[pitch] != nullptr) {
+        notes[pitch]->set_params(params);
+        notes[pitch]->note_on(mtof[pitch]);
+    } else {
+
+        // find inactive voice
+        for (auto &voice : voices) {
+            if (!voice.running()) {
+                voice.set_params(params);
+                voice.note_on(mtof[pitch]);
+                notes[pitch] = &voice;
+                break;
+            }
         }
     }
 }
@@ -200,6 +206,17 @@ void VoiceManager<T>::note_off(int pitch, int velocity) {
     if (notes[pitch]) {
         notes[pitch]->note_off();
     }
+}
+
+template<typename T>
+int VoiceManager<T>::running_voices() {
+    int count = 0;
+    for (auto &voice : voices) {
+        if (voice.running()) {
+            count += 1;
+        }
+    }
+    return count;
 }
 
 template<typename T>

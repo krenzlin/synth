@@ -82,4 +82,23 @@ TEST_CASE( "[generators::Voice] set parameters") {
 
 }
 
+TEST_CASE( "[generators::VoiceManager] anew note on should reset running voice") {
+    VoiceManager<Voice> vm {};
+    VoiceParams params {};
+
+    CHECK(vm.running_voices() == 0);
+
+    vm.note_on(60, 127, params);
+
+    CHECK(vm.running_voices() == 1);
+
+    vm.note_on(61, 127, params);
+
+    CHECK(vm.running_voices() == 2);
+
+    vm.note_on(60, 127, params);
+
+    // should reset running voice on pitch 60
+    CHECK(vm.running_voices() == 2);
+}
 #endif // ARDUINO
