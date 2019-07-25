@@ -101,4 +101,23 @@ TEST_CASE( "[generators::VoiceManager] anew note on should reset running voice")
     // should reset running voice on pitch 60
     CHECK(vm.running_voices() == 2);
 }
+
+TEST_CASE( "[helpers::random_MIDI_note] w/o arguments") {
+    for (auto i=0; i<100; i++) {
+        int note = random_MIDI_note();
+        CAPTURE(note);
+        CHECK(note >= 0);
+        CHECK(note <= 127);
+    }
+}
+
+TEST_CASE( "[helpers::random_MIDI_note] setting min and max note") {
+    for (auto i=0; i<100; i++) {
+        int note = random_MIDI_note(60, 72);
+        CAPTURE(note);
+        CHECK(note >= 60);
+        CHECK(note <= 72);
+    }
+}
+
 #endif // ARDUINO

@@ -31,6 +31,11 @@ inline float zero_one_to_minus_plus(float x) {
     return 2.0*x - 1.0;
 }
 
+// trafo: [-1..+1] => [0..1]
+inline float minus_plus_to_zero_one(float x) {
+    return (x + 1.0) / 2.0;
+}
+
 float sin_table[config::WAVETABLE_SIZE];
 void create_wavetable() {
     constexpr float increment {M_PI*2.0 / (config::WAVETABLE_SIZE-1)}; // incrementing SIZE-1 times
@@ -71,4 +76,13 @@ float fast_rand_float() {
 
     random_seed *= a;
     return (float)random_seed * m_1;
+}
+
+
+int random_MIDI_note(int min=0, int max=127) {
+    float rand = fast_rand_float();
+    rand = minus_plus_to_zero_one(rand);
+    int note = int(rand * (max - min));
+
+    return note + min;
 }
