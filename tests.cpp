@@ -30,6 +30,15 @@ TEST_CASE( "[fast_sine] wavetable sine approx. within 1%") {
     }
 }
 
+
+TEST_CASE( "[sine] test phase wrapping function") {
+    create_wavetable();
+
+    CHECK(sine(0.25) == sine(1.25));
+    CHECK(sine(0.25) == sine(-0.75));
+}
+
+
 TEST_CASE( "[generators::Phasor] test implementation") {
     const int steps = 100;
     Phasor osc;
