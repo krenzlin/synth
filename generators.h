@@ -112,7 +112,6 @@ class Square : public Voice {
         }
 };
 
-
 // wavetable sin
 class Sine: public Voice {
     private:
@@ -122,7 +121,7 @@ class Sine: public Voice {
 };
 
 
-// wavetable sin
+// noise ---------------------
 class Noise: public Voice {
     private:
         virtual float compute_sample(float /* phase - unused */) {
