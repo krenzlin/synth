@@ -44,7 +44,7 @@ struct VoiceParams {
 // Voice base class
 class Voice: public Phasor {
     public:
-        void note_on(float frequency);
+        virtual void note_on(float frequency);
         void note_off();
         float next_sample() override;
         bool running();
@@ -128,6 +128,29 @@ class Noise: public Voice {
             return fast_rand_float();
         }
 };
+
+
+class FM : public Voice {
+    public:
+        void note_on(float frequency) override;
+        float k_ {0.0};
+        float ratio_ {1.0};
+        Sine carrier_;
+        Sine modulator_;
+    private:
+        float compute_sample(float phase) override;
+};
+
+
+void FM::note_on(float frequency) {
+    carrier_.note_on(frequency);
+    modulator_.note_on(ratio_ * frequency);
+    Voice::note_on(frequency);
+}
+
+float FM::compute_sample(float phase) {
+    return exp(k_*modulator_.next_sample() - k_) * carrier_.next_sample();
+}
 
 
 // managing and mixing the available voices
