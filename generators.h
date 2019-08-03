@@ -217,6 +217,7 @@ template<typename T>
 void VoiceManager<T>::note_off(int pitch, int velocity) {
     if (notes[pitch]) {
         notes[pitch]->note_off();
+        notes[pitch] = nullptr;
     }
 }
 
