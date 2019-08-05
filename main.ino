@@ -12,7 +12,7 @@ VoiceManager<FM> vm {};
 VoiceParams tone {};
 VoiceParams kick {};
 
-//MIDI_CREATE_DEFAULT_INSTANCE();
+MIDI_CREATE_DEFAULT_INSTANCE();
 
 void handleNoteOn(byte channel, byte pitch, byte velocity) {
     digitalWrite(LED, HIGH);
@@ -23,6 +23,11 @@ void handleNoteOn(byte channel, byte pitch, byte velocity) {
 
 void handleNoteOff(byte channel, byte pitch, byte velocity) {
     vm.note_off(int(pitch), int(velocity));
+}
+
+void handleControlChange(byte channel, byte number, byte value) {
+    float data = float(value)/127.0;
+    tone.ratio = (float) int(data * 3.0);
 }
 
 void blink(int N) {
@@ -41,33 +46,17 @@ void setup() {
     create_wavetable();
     blink(1);
 
-    //MIDI.setHandleNoteOn(handleNoteOn);
-    //MIDI.setHandleNoteOff(handleNoteOff);
-    //MIDI.begin(MIDI_CHANNEL_OMNI);
+    MIDI.setHandleNoteOn(handleNoteOn);
+    MIDI.setHandleNoteOff(handleNoteOff);
+    MIDI.setHandleControlChange(handleControlChange);
+    MIDI.begin(MIDI_CHANNEL_OMNI);
 
     vm.init();
-    vm.set_ADSR(0.5, 0.0, 1.0, 1.0);
+    //vm.set_ADSR(0.001, 0.5, 0.0, 0.0);
 
     audio(vm);
 }
 
 void loop() {
-    //MIDI.read();
-    int note1 = random_MIDI_note(60, 72);
-    int note2 = random_MIDI_note(60, 72);
-    int note3 = random_MIDI_note(60, 72);
-
-
-    vm.note_on(note1, 127, tone);
-    delay(250);
-    vm.note_on(note2, 127, tone);
-    delay(250);
-    vm.note_on(note3, 127, tone);
-    delay(250);
-    vm.note_off(note1, 127);
-    delay(50);
-    vm.note_off(note2, 127);
-    delay(50);
-    vm.note_off(note3, 127);
-    delay(50);
+    MIDI.read();
 }
