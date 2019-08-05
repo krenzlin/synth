@@ -44,19 +44,19 @@ struct VoiceParams {
 // Voice base class
 class Voice: public Phasor {
     public:
-        virtual void note_on(float frequency);
+        virtual void note_on(float frequency, float velocity);
         void note_off();
         float next_sample() override;
         bool running();
         void set_ADSR(float attack, float decay, float sustain, float release);
         void set_params(VoiceParams params) {m_params = params;};
+        VoiceParams m_params;
     private:
         virtual float compute_sample(float phase);
         ADSR m_env;
-        VoiceParams m_params;
 };
 
-void Voice::note_on(float frequency) {
+void Voice::note_on(float frequency, float velocity) {
     m_phase = m_params.phase;
     this->frequency = frequency;
     m_env.reset();
@@ -196,16 +196,18 @@ float VoiceManager<T>::next_sample() {
 
 template<typename T>
 void VoiceManager<T>::note_on(int pitch, int velocity, VoiceParams params) {
+    float frequency = mtof[pitch];
+    float volume = float(velocity) / 127.0;
     // note already playing?
     if (notes[pitch] != nullptr) {
         notes[pitch]->set_params(params);
-        notes[pitch]->note_on(mtof[pitch]);
+        notes[pitch]->note_on(frequency, volume);
     // no, find inactive voice
     } else {
         for (auto &voice : voices) {
             if (!voice.running()) {
                 voice.set_params(params);
-                voice.note_on(mtof[pitch]);
+                voice.note_on(frequency, volume);
                 notes[pitch] = &voice;
                 break;
             }
