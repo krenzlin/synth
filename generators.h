@@ -39,6 +39,7 @@ float Phasor::next_sample() {
 
 struct VoiceParams {
     float phase {0.0}; // start phase [0..1]
+    float ratio {1.0};
 };
 
 // Voice base class
@@ -132,24 +133,29 @@ class Noise: public Voice {
 
 class FM : public Voice {
     public:
-        void note_on(float frequency) override;
+        void note_on(float frequency, float velocity) override;
         float k_ {0.0};
-        float ratio_ {1.0};
-        Sine carrier_;
         Sine modulator_;
     private:
         float compute_sample(float phase) override;
 };
 
 
-void FM::note_on(float frequency) {
-    carrier_.note_on(frequency);
-    modulator_.note_on(ratio_ * frequency);
-    Voice::note_on(frequency);
+void FM::note_on(float frequency, float velocity) {
+    k_ = velocity;
+    modulator_.note_on(m_params.ratio * frequency, velocity);
+    Voice::note_on(frequency, velocity);
 }
 
 float FM::compute_sample(float phase) {
-    return exp(k_*modulator_.next_sample() - k_) * carrier_.next_sample();
+    phase += k_*modulator_.next_sample();
+    while (phase > 1.0) {
+        phase -= 1.0;
+    }
+    while (phase < 0.0) {
+        phase += 1.0;
+    }
+    return fast_sine(phase);
 }
 
 
