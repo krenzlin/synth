@@ -159,6 +159,22 @@ float FM::compute_sample(float phase) {
 }
 
 
+class ResoSaw : public Voice {
+    public:
+        float speed_ {1.0};
+    private:
+        float compute_sample(float phase) override;
+};
+
+float ResoSaw::compute_sample(float phase) {
+    float res_phase = phase * speed_;
+    // advance phase to get a cosine
+    res_phase += 0.25;
+    res_phase = mod_phase(res_phase);
+    return (-fast_sine(res_phase) + 1.0f) * (1.0f -phase) - 1.0f;
+}
+
+
 // managing and mixing the available voices
 template<typename T>
 class VoiceManager : public Generator {
