@@ -169,6 +169,24 @@ float ResoSaw::compute_sample(float phase) {
 }
 
 
+class PhaseDistortion : public Voice {
+    public:
+        float x_ {0.5};
+    private:
+        float compute_sample(float phase) override;
+};
+
+float PhaseDistortion::compute_sample(float phase) {
+    if (phase <= x_) {
+        phase = (1.0 - x_) / x_ * phase;
+    } else {
+        phase = (x_ / (1.0 - x_)) * phase + (1 - (x_ / (1.0 - x_)));
+    }
+    phase += 0.25;
+    phase = mod_phase(phase);
+    return fast_sine(phase);
+}
+
 // managing and mixing the available voices
 template<typename T>
 class VoiceManager : public Generator {
