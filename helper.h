@@ -99,7 +99,7 @@ int random_MIDI_note(int min=0, int max=127) {
 }
 
 
-float mod_phase(float phase) {
+inline float mod_phase(float phase) {
     while (phase > 1.0) {
         phase -= 1.0;
     }

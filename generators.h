@@ -140,7 +140,6 @@ class FM : public Voice {
         float compute_sample(float phase) override;
 };
 
-
 void FM::note_on(float frequency, float velocity) {
     k_ = velocity;
     modulator_.note_on(m_params.ratio * frequency, velocity);
@@ -149,12 +148,7 @@ void FM::note_on(float frequency, float velocity) {
 
 float FM::compute_sample(float phase) {
     phase += k_*modulator_.next_sample();
-    while (phase > 1.0) {
-        phase -= 1.0;
-    }
-    while (phase < 0.0) {
-        phase += 1.0;
-    }
+    phase = mod_phase(phase);
     return fast_sine(phase);
 }
 
