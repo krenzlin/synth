@@ -156,16 +156,26 @@ float FM::compute_sample(float phase) {
 class ResoSaw : public Voice {
     public:
         float speed_ {1.0};
+        float reso_ {1.0};
     private:
         float compute_sample(float phase) override;
 };
 
 float ResoSaw::compute_sample(float phase) {
+    float saw = 2.f * reso_ * (1.f - phase);
+    float r = (1.0f - phase) * (1.0f - reso_);
     float res_phase = phase * speed_;
+    if (res_phase < 0.5) {
+        r = 1.0f - phase;
+        saw = 0.0;
+    }
     // advance phase to get a cosine
     res_phase += 0.25;
     res_phase = mod_phase(res_phase);
-    return (-fast_sine(res_phase) + 1.0f) * (1.0f -phase) - 1.0f;
+
+    float resonance = (-fast_sine(res_phase) + 1.0f) * r;
+
+    return resonance + saw - 1.0f;
 }
 
 
