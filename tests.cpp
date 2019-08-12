@@ -55,8 +55,10 @@ TEST_CASE( "[generators::Phasor] test implementation") {
 
 TEST_CASE( "[generators::Saw] test implementation") {
     const int steps = 100;
+    float frequency = config::SAMPLE_RATE / float(steps);
+    float velocity = 127.f;
     Saw osc;
-    osc.note_on(config::SAMPLE_RATE / float(steps));
+    osc.note_on(frequency, velocity);
 
     for (auto i=0; i < steps; i++) {
         float value = float(i) / float(steps);
@@ -70,7 +72,7 @@ TEST_CASE( "[generators::Saw] test implementation") {
 TEST_CASE( "[generators::Voice] test running status") {
     Voice voice;
     CHECK(voice.running() == false);
-    voice.note_on(440.0);
+    voice.note_on(440.0, 127.f);
     CHECK(voice.running() == true);
 }
 
@@ -80,13 +82,13 @@ TEST_CASE( "[generators::Voice] set parameters") {
 
     vp.phase = 0.0;
     voice.set_params(vp);
-    voice.note_on(440.0);
+    voice.note_on(440.0, 127.f);
     CHECK(voice.next_sample() == -1.0);
 
     // start half-way through cycle
     vp.phase = 0.5;
     voice.set_params(vp);
-    voice.note_on(440.0);
+    voice.note_on(440.0, 127.f);
     CHECK(voice.next_sample() == 0.0);
 
 }
