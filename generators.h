@@ -24,11 +24,8 @@ class Phasor : public Generator {
 };
 
 inline void Phasor::advance_phase() {
-    m_phase_increment = frequency / config::SAMPLE_RATE;
-    m_phase += m_phase_increment;
-    if (m_phase > 1.0) {
-        m_phase -= 1.0;
-    }
+    m_phase += phase_increment(frequency);
+    m_phase = mod_phase(m_phase);
 }
 
 float Phasor::next_sample() {
@@ -202,7 +199,7 @@ template<typename T>
 class VoiceManager : public Generator {
     private:
         T voices[config::MAX_VOICES];
-        float mtof[127];  // pre-calculated MIDI -> frequency
+        float m_mtof[127];  // pre-calculated MIDI -> frequency
         T* notes[127];
     public:
         void init();
@@ -222,7 +219,7 @@ void VoiceManager<T>::init() {
     }
 
     for (int x = 0; x < 127; ++x) {
-        mtof[x] = pow(2.0, (x - 69.0)/12.0) * config::TUNING;
+        m_mtof[x] = mtof(x);
     }
 }
 
@@ -240,7 +237,7 @@ float VoiceManager<T>::next_sample() {
 
 template<typename T>
 void VoiceManager<T>::note_on(int pitch, int velocity, VoiceParams params) {
-    float frequency = mtof[pitch];
+    float frequency = m_mtof[pitch];
     float volume = float(velocity) / 127.0;
     // note already playing?
     if (notes[pitch] != nullptr) {

@@ -1,6 +1,3 @@
-#ifndef ARDUINO
-
-#define DOCTEST_CONFIG_IMPLEMENT_WITH_MAIN
 #include "doctest.h"
 
 #include <math.h>
@@ -130,5 +127,3 @@ TEST_CASE( "[helpers::random_MIDI_note] setting min and max note") {
         CHECK(note <= 72);
     }
 }
-
-#endif // ARDUINO
