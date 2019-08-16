@@ -1,0 +1,7 @@
+CFLAGS += -Wall -Wextra -pedantic --std=c++17
+CFLAGS += -I.
+CFLAGS += -g
+
+: foreach tests/*.cpp |> g++ -c $(CFLAGS) %f -o %o |> build/%B.o
+: foreach *.cpp |> g++ -c $(CFLAGS) %f -o %o |> build/%B.o
+: build/tests-main.o build/tests.o build/ADSR.o |> g++ -Wall -g %f -o %o |> bin/tests

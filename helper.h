@@ -5,6 +5,22 @@
 #include "config.h"
 
 // helper functions ------------------------------
+inline float phase_increment(float frequency, const float sr=config::SAMPLE_RATE) {
+    return frequency / sr;
+}
+
+
+inline float mod_phase(float phase, const float mod=1.0) {
+    while (phase > mod) {
+        phase -= mod;
+    }
+    while (phase < 0.0) {
+        phase += mod;
+    }
+    return phase;
+}
+
+
 float poly_blep(float p, float dp) {
     if (p < dp) {
         p /= dp;
@@ -53,12 +69,7 @@ float fast_sine(float phase) {
 }
 
 float sine(float phase) {
-    while (phase < 0.0) {
-        phase += 1.0;
-    }
-    while (phase > 1.0) {
-        phase -= 1.0;
-    }
+    phase = mod_phase(phase);
 
     return fast_sine(phase);
 }
@@ -96,15 +107,4 @@ int random_MIDI_note(int min=0, int max=127) {
     int note = int(rand * (max - min));
 
     return note + min;
-}
-
-
-inline float mod_phase(float phase) {
-    while (phase > 1.0) {
-        phase -= 1.0;
-    }
-    while (phase < 0.0) {
-        phase += 1.0;
-    }
-    return phase;
 }
