@@ -27,7 +27,7 @@ void handleNoteOff(byte channel, byte pitch, byte velocity) {
 
 void handleControlChange(byte channel, byte number, byte value) {
     float data = float(value)/127.0;
-    tone.ratio = (float) int(data * 3.0);
+    tone.ratio = data;
 }
 
 void blink(int N) {

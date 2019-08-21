@@ -138,13 +138,13 @@ class FM : public Voice {
 };
 
 void FM::note_on(float frequency, float velocity) {
-    k_ = velocity;
+    k_ = velocity / 127.0 * 10;
     modulator_.note_on(m_params.ratio * frequency, velocity);
     Voice::note_on(frequency, velocity);
 }
 
 float FM::compute_sample(float phase) {
-    phase += k_*modulator_.next_sample();
+    phase += k_ * modulator_.frequency * modulator_.next_sample();
     phase = mod_phase(phase);
     return fast_sine(phase);
 }
