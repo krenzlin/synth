@@ -1,2 +1,8 @@
 .vscode
 *.ipynb
+generated.raw
+tup
+.tup
+bin
+build
+__pycache__
