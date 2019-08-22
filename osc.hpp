@@ -11,15 +11,22 @@ struct Generator {
 
 struct Saw : Generator {
     float frequency {0.0};
+    float _freq {0.0};
+    float p_incr {0.0};
     float phase {0.0};
 
     float sample() {
-        float p_incr = phase_increment(frequency);
+        if (_freq != frequency) {
+            _freq = frequency;
+            p_incr = phase_increment(frequency);
+        }
         float sample =  phase - poly_blep(phase, p_incr);
         sample = zero_one_to_minus_plus(sample);
 
         phase += p_incr;
-        phase = mod_phase(phase);
+        if (phase > 1.0) {
+            phase -= 1.0;
+        }
 
         return sample;
     }
