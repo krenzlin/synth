@@ -5,17 +5,17 @@
 #include "helper.h"
 
 struct Generator {
-    virtual double sample() = 0;
+    virtual float sample() = 0;
 };
 
 
 struct Saw : Generator {
-    double frequency {0.0};
-    double phase {0.0};
+    float frequency {0.0};
+    float phase {0.0};
 
-    double sample() {
-        double p_incr = phase_increment(frequency);
-        double sample =  phase - poly_blep(phase, p_incr);
+    float sample() {
+        float p_incr = phase_increment(frequency);
+        float sample =  phase - poly_blep(phase, p_incr);
         sample = zero_one_to_minus_plus(sample);
 
         phase += p_incr;
@@ -26,11 +26,11 @@ struct Saw : Generator {
 };
 
 struct Sine : Generator {
-    double frequency {0.0};
-    double phase {0.0};
+    float frequency {0.0};
+    float phase {0.0};
 
-    double sample() {
-        double sample = fast_sine(phase);
+    float sample() {
+        float sample = fast_sine(phase);
 
         phase += phase_increment(frequency);
         phase = mod_phase(phase);
@@ -39,7 +39,7 @@ struct Sine : Generator {
 };
 
 struct Noise : Generator {
-    double sample() {
+    float sample() {
         return fast_rand_float();
     }
 };
@@ -55,16 +55,16 @@ struct Voice : Generator {
         return env.getState();
     }
 
-    double sample() {
+    float sample() {
         if (!is_active()) {
             return 0.0;
         }
 
-        return double(osc.sample() * env.process());
+        return float(osc.sample() * env.process());
     }
 
     void note_on(int pitch, int velocity) {
-        double frequency = mtof(pitch);
+        float frequency = mtof(pitch);
         osc.frequency = frequency;
 
         env.reset();
@@ -88,15 +88,15 @@ struct VoiceManager : Generator {
         }
     }
 
-    double sample() {
-        double sample = 0.0;
+    float sample() {
+        float sample = 0.0;
 
         for (auto &voice : voices) {
             if (voice.is_active()) {
                 sample += voice.sample();
             }
         }
-        sample /= double(config::MAX_VOICES);
+        sample /= float(config::MAX_VOICES);
 
         return sample;
     }
