@@ -5,18 +5,16 @@
 #include "config.h"
 #include "defs.h"
 #include "sound.h"
-#include "generators.h"
+#include "osc.hpp"
 
 // declare Synth/Audio object in global namespace to keep it alive for the audio thread
-VoiceManager<FM> vm {};
-VoiceParams tone {};
-VoiceParams kick {};
+VoiceManager<Saw> vm {};
 
 MIDI_CREATE_DEFAULT_INSTANCE();
 
 void handleNoteOn(byte channel, byte pitch, byte velocity) {
     digitalWrite(LED, HIGH);
-    vm.note_on(int(pitch), int(velocity), tone);
+    vm.note_on(int(pitch), int(velocity));
     delay(10);
     digitalWrite(LED, LOW);
 }
@@ -27,7 +25,6 @@ void handleNoteOff(byte channel, byte pitch, byte velocity) {
 
 void handleControlChange(byte channel, byte number, byte value) {
     float data = float(value)/127.0;
-    tone.ratio = data;
 }
 
 void blink(int N) {
@@ -50,9 +47,6 @@ void setup() {
     MIDI.setHandleNoteOff(handleNoteOff);
     MIDI.setHandleControlChange(handleControlChange);
     MIDI.begin(MIDI_CHANNEL_OMNI);
-
-    vm.init();
-    //vm.set_ADSR(0.001, 0.5, 0.0, 0.0);
 
     audio(vm);
 }
