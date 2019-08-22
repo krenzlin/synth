@@ -6,3 +6,4 @@ CFLAGS += -g
 : foreach *.cpp |> g++ -c $(CFLAGS) %f -o %o |> build/%B.o
 : build/tests-main.o build/tests.o build/ADSR.o  |> g++ $(CFLAGS) %f -o %o |> bin/tests
 : build/write_to_file.o build/ADSR.o  |> g++ $(CFLAGS) %f -o %o |> bin/write_to_file
+: build/refactor.o build/ADSR.o  |> g++ $(CFLAGS) %f -o %o |> bin/refactor
