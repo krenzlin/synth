@@ -4,6 +4,7 @@
 #include <stdio.h>
 #include "config.h"
 #include "generators.h"
+#include "osc.hpp"
 
 float simulate_8bit(float value) {
     return value;
