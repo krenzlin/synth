@@ -59,6 +59,22 @@ struct Noise : Generator {
     }
 };
 
+template<typename T>
+struct Double : Generator {
+    T osc1 {};
+    T osc2 {};
+    float detune {0.0};
+    float mix {0.5};
+
+    void note_on(float frequency, float velocity) {
+        osc1.note_on(frequency - detune, velocity);
+        osc2.note_on(frequency + detune, velocity);
+    }
+
+    float sample() {
+        return mix * osc1.sample() + (1.0 - mix) * osc2.sample();
+    }
+};
 
 template<typename T>
 struct Voice : Generator {
