@@ -1,6 +1,7 @@
 #include "doctest.h"
 
 #include "osc.hpp"
+#include "helper.hpp"
 
 
 TEST_CASE("[Generator] basic") {
@@ -29,6 +30,7 @@ TEST_CASE( "[Saw] test implementation") {
 
     Saw osc;
     osc.frequency = frequency;
+    osc.bandlimit = false;
 
     for (auto i=0; i < steps; i++) {
         float value = float(i) / float(steps);
@@ -37,6 +39,7 @@ TEST_CASE( "[Saw] test implementation") {
         CAPTURE(i);
         CHECK(osc.sample() == doctest::Approx(value));
     }
+
 }
 
 

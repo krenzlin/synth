@@ -14,20 +14,23 @@ struct Saw : Generator {
     float _freq {0.0};
     float p_incr {0.0};
     float phase {0.0};
+    bool bandlimit {true};
 
     float sample() {
         if (_freq != frequency) {
             _freq = frequency;
             p_incr = phase_increment(frequency);
         }
-        float sample =  phase - poly_blep(phase, p_incr);
+        float sample = phase;
+        if (bandlimit) {
+            sample -= poly_blep(phase, p_incr);
+        }
         sample = zero_one_to_minus_plus(sample);
 
         phase += p_incr;
         if (phase > 1.0) {
             phase -= 1.0;
         }
-
         return sample;
     }
 };
