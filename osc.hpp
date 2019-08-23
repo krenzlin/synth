@@ -40,6 +40,10 @@ struct Sine : Generator {
     float frequency {0.0};
     float phase {0.0};
 
+    void note_on(float frequency, float velocity) override {
+        this->frequency = frequency;
+    }
+
     float sample() {
         float sample = fast_sine(phase);
 
