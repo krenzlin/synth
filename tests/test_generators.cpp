@@ -29,14 +29,16 @@ TEST_CASE( "[Saw] test implementation") {
     float frequency = config::SAMPLE_RATE / float(steps);
 
     Saw osc;
-    osc.frequency = frequency;
     osc.bandlimit = false;
+    osc.note_on(frequency, 1.0);
 
     for (auto i=0; i < steps; i++) {
         float value = float(i) / float(steps);
         value = zero_one_to_minus_plus(value);
 
         CAPTURE(i);
+        CAPTURE(osc.frequency);
+        CAPTURE(osc.p_incr);
         CHECK(osc.sample() == doctest::Approx(value));
     }
 

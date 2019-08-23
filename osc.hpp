@@ -12,16 +12,16 @@ struct Generator {
 
 struct Saw : Generator {
     float frequency {0.0};
-    float _freq {0.0};
     float p_incr {0.0};
     float phase {0.0};
     bool bandlimit {true};
 
+    void note_on(float frequency, float velocity) override {
+        frequency = frequency;
+        p_incr = phase_increment(frequency);
+    }
+
     float sample() {
-        if (_freq != frequency) {
-            _freq = frequency;
-            p_incr = phase_increment(frequency);
-        }
         float sample = phase;
         if (bandlimit) {
             sample -= poly_blep(phase, p_incr);
