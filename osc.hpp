@@ -1,8 +1,8 @@
 #pragma once
 
 #include "ADSR.h"
-#include "config.h"
-#include "helper.h"
+#include "config.hpp"
+#include "helper.hpp"
 
 struct Generator {
     virtual float sample() = 0;
