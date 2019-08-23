@@ -46,6 +46,6 @@ TEST_CASE( "[Saw] test implementation") {
 TEST_CASE( "[Voice] test running status") {
     Voice<Noise> voice;
     CHECK(voice.is_active() == false);
-    //voice.note_on(440.0, 127.0);
-    //CHECK(voice.is_active() == true);
+    voice.note_on(440.0, 127.0);
+    CHECK(voice.is_active() == true);
 }

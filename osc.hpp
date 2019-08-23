@@ -6,6 +6,7 @@
 
 struct Generator {
     virtual float sample() = 0;
+    virtual void note_on(float frequency, float velocity) {};
 };
 
 
@@ -75,7 +76,7 @@ struct Voice : Generator {
 
     void note_on(int pitch, int velocity) {
         float frequency = mtof(pitch);
-        osc.frequency = frequency;
+        osc.note_on(frequency, float(velocity) / 127.0);
 
         env.reset();
         env.gate(true);
