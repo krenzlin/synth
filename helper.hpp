@@ -7,7 +7,7 @@
 #ifndef ARDUINO
 #include <iostream>
 #define PRINT(msg) std::cout << msg << std::endl
-#define SHOW(x) PRINT(#x " := " << x)
+#define SHOW(x) PRINT(#x " = " << x)
 #else
 #define PRINT(msg)
 #define SHOW(x)
