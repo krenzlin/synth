@@ -4,6 +4,15 @@
 
 #include "config.hpp"
 
+#ifndef ARDUINO
+#include <iostream>
+#define PRINT(msg) std::cout << msg << std::endl
+#define SHOW(x) PRINT(#x " := " << x)
+#else
+#define PRINT(msg)
+#define SHOW(x)
+#endif
+
 // helper functions ------------------------------
 inline float phase_increment(float frequency, const float sr=config::SAMPLE_RATE) {
     return frequency / sr;
