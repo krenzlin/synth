@@ -53,6 +53,32 @@ struct Sine : Generator {
     }
 };
 
+struct DriftingSine : Sine {
+    float drift {0.05};
+    bool sign {false};
+    int steps {0};
+    int max_steps {5};
+
+    float sample() {
+        float sample = fast_sine(phase);
+
+        phase += phase_increment(frequency + drift);
+        if (phase > 1.0) {
+            phase -= 1.0;
+
+            // hit a new cycle -> update frequency drift
+            frequency += drift;
+            steps--;
+
+            if (steps <= 0) {
+                steps = int(minus_plus_to_zero_one(fast_rand_float()) * max_steps);
+                drift *= -1.0;
+            }
+        }
+        return sample;
+    }
+};
+
 struct Noise : Generator {
     float sample() {
         return fast_rand_float();
@@ -64,7 +90,7 @@ struct Double : Generator {
     T osc1 {};
     T osc2 {};
     float detune {0.0};
-    float mix {0.5};
+    float mix {0.9};
 
     void note_on(float frequency, float velocity) {
         osc1.note_on(frequency - detune, velocity);

@@ -23,10 +23,28 @@ float SR = config::SAMPLE_RATE;
 
 int main() {
     create_wavetable();
-    VoiceManager<Saw> osc {};
-
     std::FILE* file = std::fopen("generated.raw", "wb");
     if (true) {
+        DriftingSine osc {};
+        osc.note_on(440.0, 1.0);
+        write_to_file(osc, 10000, file);
+    }
+    if (false) {
+        VoiceManager<DriftingSine> osc {};
+        osc.note_on(60, 127);
+        osc.note_on(72, 127);
+        osc.note_on(84, 127);
+        write_to_file(osc, 10000, file);
+    }
+    if (false) {
+        Voice<Double<DriftingSine>> osc {};
+        osc.osc.mix = 0.9;
+        osc.note_on(69, 127);
+        write_to_file(osc, 5000, file);
+    }
+    if (false) {
+        VoiceManager<Saw> osc {};
+
         osc.note_on(69, 127);
         osc.note_on(30, 127);
         write_to_file(osc, 250, file);
