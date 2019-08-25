@@ -4,6 +4,7 @@
 #include <stdio.h>
 #include "config.hpp"
 #include "osc.hpp"
+#include "patches.hpp"
 
 float simulate_8bit(float value) {
     return value;
@@ -25,21 +26,16 @@ int main() {
     create_wavetable();
     std::FILE* file = std::fopen("generated.raw", "wb");
     if (true) {
-        DriftingSine osc {};
-        osc.note_on(440.0, 1.0);
-        write_to_file(osc, 10000, file);
-    }
-    if (false) {
-        VoiceManager<DriftingSine> osc {};
+        VoiceManager<Organ> osc {};
+        osc.note_on(60-24, 127);
+        write_to_file(osc, 5000, file);
+        osc.note_on(60-2, 127);
+        write_to_file(osc, 5000, file);
+        osc.note_off(60-2, 127);
+
         osc.note_on(60, 127);
-        osc.note_on(72, 127);
-        osc.note_on(84, 127);
-        write_to_file(osc, 10000, file);
-    }
-    if (false) {
-        Voice<Double<DriftingSine>> osc {};
-        osc.osc.mix = 0.9;
-        osc.note_on(69, 127);
+        osc.note_on(60+4, 127);
+
         write_to_file(osc, 5000, file);
     }
     if (false) {
