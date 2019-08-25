@@ -56,7 +56,7 @@ struct Sine : Generator {
 };
 
 struct DriftingSine : Sine {
-    float drift {0.05};
+    float drift {0.0};
     bool sign {false};
     int steps {0};
     int max_steps {5};
@@ -68,13 +68,14 @@ struct DriftingSine : Sine {
         if (phase > 1.0) {
             phase -= 1.0;
 
-            // hit a new cycle -> update frequency drift
-            frequency += drift;
             steps--;
 
             if (steps <= 0) {
                 steps = int(minus_plus_to_zero_one(fast_rand_float()) * max_steps);
-                drift *= -1.0;
+                drift = fast_rand_float();
+                if ((drift > 1.0) | (drift < -1.0)) {
+                    drift = 0.0;
+                }
             }
         }
         return sample;
