@@ -87,12 +87,12 @@ struct Noise : Generator {
     }
 };
 
-template<typename T>
+template<typename T1, typename T2>
 struct Double : Generator {
-    T osc1 {};
-    T osc2 {};
+    T1 osc1 {};
+    T2 osc2 {};
     float detune {0.0};
-    float mix {0.9};
+    float mix {0.5};
 
     void note_on(float frequency, float velocity) {
         osc1.note_on(frequency - detune, velocity);
