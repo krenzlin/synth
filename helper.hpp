@@ -80,6 +80,10 @@ inline float fast_rand_float() {
     return float(config::random_seed) * m_1;
 }
 
+inline float random_phase() {
+    return minus_plus_to_zero_one(fast_rand_float());
+}
+
 int random_MIDI_note(int min=0, int max=127);
 
 float mtof(int note);

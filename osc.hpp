@@ -6,7 +6,7 @@
 
 struct Generator {
     virtual float sample() = 0;
-    virtual void note_on(float frequency, float velocity) {};
+    virtual void note_on(float /* frequency */, float /* velocity */) {};
 };
 
 
@@ -16,7 +16,7 @@ struct Saw : Generator {
     float phase {0.0};
     bool bandlimit {true};
 
-    void note_on(float frequency, float velocity) override {
+    void note_on(float frequency, float /* velocity */) override {
         frequency = frequency;
         p_incr = phase_increment(frequency);
     }
@@ -38,14 +38,16 @@ struct Saw : Generator {
 
 struct Sine : Generator {
     float frequency {0.0};
-    float phase {0.0};
+    float velocity {1.0};
+    float phase {random_phase()};
 
     void note_on(float frequency, float velocity) override {
         this->frequency = frequency;
+        this->velocity = velocity;
     }
 
     float sample() {
-        float sample = fast_sine(phase);
+        float sample = fast_sine(phase) * velocity;;
 
         phase += phase_increment(frequency);
         phase = mod_phase(phase);
