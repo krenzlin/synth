@@ -17,8 +17,8 @@ struct Saw : Generator {
     bool bandlimit {true};
 
     void note_on(float frequency, float /* velocity */) override {
-        frequency = frequency;
-        p_incr = phase_increment(frequency);
+        this->frequency = frequency;
+        this->p_incr = phase_increment(this->frequency);
     }
 
     float sample() {
