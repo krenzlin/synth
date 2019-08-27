@@ -10,6 +10,21 @@ struct Generator {
 };
 
 
+struct Lowpass {
+    float alpha {0.0};
+    float y {0.0};
+
+    void set_cutoff(float f_c) {
+        float w_c = f_c / config::SAMPLE_RATE;
+        this->alpha = w_c / (1.0 + w_c);
+    }
+
+    float process(float x) {
+        y += this->alpha * (x - y);
+        return y;
+    }
+};
+
 struct Saw : Generator {
     float frequency {0.0};
     float p_incr {0.0};
