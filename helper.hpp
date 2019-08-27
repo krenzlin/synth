@@ -50,7 +50,7 @@ inline float minus_plus_to_zero_one(float x) {
     return (x + 1.0) / 2.0;
 }
 
-static float sin_table[config::WAVETABLE_SIZE];
+extern float sin_table[config::WAVETABLE_SIZE];
 void create_wavetable();
 
 // expects phase to be between 0.0 and 1.0
