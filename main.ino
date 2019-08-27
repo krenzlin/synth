@@ -2,7 +2,7 @@
 #include <Arduino.h>
 #include <MIDI.h>
 
-#include "config.h"
+#include "config.hpp"
 #include "defs.h"
 #include "sound.h"
 #include "osc.hpp"
