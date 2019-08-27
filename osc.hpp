@@ -36,6 +36,38 @@ struct Saw : Generator {
     }
 };
 
+struct DriftingSaw : Saw {
+    float drift {0.0};
+    int steps {0};
+    int max_steps {5};
+
+    float sample() {
+        float sample = phase;
+        if (bandlimit) {
+            sample -= poly_blep(phase, p_incr);
+        }
+        sample = zero_one_to_minus_plus(sample);
+
+        phase += p_incr;
+        if (phase > 1.0) {
+            phase -= 1.0;
+
+            steps--;
+
+            if (steps <= 0) {
+                steps = int(minus_plus_to_zero_one(fast_rand_float()) * max_steps);
+                drift = fast_rand_float();
+                if ((drift > 1.0) | (drift < -1.0)) {
+                    drift = 0.0;
+                }
+                p_incr = phase_increment(frequency + drift);
+            }
+
+        }
+        return sample;
+    }
+};
+
 struct Sine : Generator {
     float frequency {0.0};
     float velocity {1.0};
