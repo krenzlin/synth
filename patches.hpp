@@ -27,3 +27,22 @@ struct Organ : Generator {
                 h2.sample(), dist_amount);
     }
 };
+
+
+struct Strings : Generator {
+    Double<Saw, DriftingSaw> osc {};
+    Lowpass lp;
+
+    void note_on(float frequency, float velocity) {
+        lp.set_cutoff(frequency);
+        osc.mix = 0.8;
+        osc.osc1.phase = random_phase();
+        osc.osc2.phase = random_phase();
+        osc.osc2.max_steps = 20;
+        osc.note_on(frequency, velocity);
+    }
+
+    float sample() {
+        return lp.process(osc.sample());
+    }
+};
