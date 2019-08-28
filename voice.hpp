@@ -76,4 +76,10 @@ struct VoiceManager : Generator {
             notes[note] = nullptr;
         }
     }
+
+    void handle_control_change(int number, int value) {
+        for (auto &voice : voices) {
+            voice.handle_control_change(number, value);
+        }
+    }
 };

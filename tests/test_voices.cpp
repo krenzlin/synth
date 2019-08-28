@@ -19,3 +19,12 @@ TEST_CASE("[Voice] test interface") {
     voice.sample();
     voice.handle_control_change(11, 127);
 }
+
+
+TEST_CASE("[VoiceManager] test interface") {
+    VoiceManager< Voice<Noise> > vm;
+    vm.note_on(69, 127);
+    vm.note_off(69, 127);
+    vm.sample();
+    vm.handle_control_change(11, 127);
+}
