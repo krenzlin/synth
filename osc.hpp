@@ -6,7 +6,7 @@
 
 struct Generator {
     virtual float sample() = 0;
-    virtual void note_on(float /* frequency */, float /* velocity */) {};
+    virtual void on(float /* frequency */, float /* velocity */) {};
 };
 
 
@@ -31,7 +31,7 @@ struct Saw : Generator {
     float phase {0.0};
     bool bandlimit {true};
 
-    void note_on(float frequency, float /* velocity */) override {
+    void on(float frequency, float /* velocity */) override {
         this->frequency = frequency;
         this->p_incr = phase_increment(this->frequency);
     }
@@ -88,7 +88,7 @@ struct Sine : Generator {
     float velocity {1.0};
     float phase {random_phase()};
 
-    void note_on(float frequency, float velocity) override {
+    void on(float frequency, float velocity) override {
         this->frequency = frequency;
         this->velocity = velocity;
     }
@@ -142,9 +142,9 @@ struct Double : Generator {
     float detune {0.0};
     float mix {0.5};
 
-    void note_on(float frequency, float velocity) {
-        osc1.note_on(frequency - detune, velocity);
-        osc2.note_on(frequency + detune, velocity);
+    void on(float frequency, float velocity) {
+        osc1.on(frequency - detune, velocity);
+        osc2.on(frequency + detune, velocity);
     }
 
     float sample() {
@@ -172,7 +172,7 @@ struct Voice : Generator {
 
     void note_on(int pitch, int velocity) {
         float frequency = mtof(pitch);
-        osc.note_on(frequency, float(velocity) / 127.0);
+        osc.on(frequency, float(velocity) / 127.0);
 
         env.reset();
         env.gate(true);

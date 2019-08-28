@@ -30,7 +30,7 @@ TEST_CASE( "[Saw] test implementation") {
 
     Saw osc;
     osc.bandlimit = false;
-    osc.note_on(frequency, 1.0);
+    osc.on(frequency, 1.0);
 
     for (auto i=0; i < steps; i++) {
         float value = float(i) / float(steps);
