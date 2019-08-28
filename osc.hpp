@@ -6,6 +6,9 @@
 
 struct Generator {
     virtual float sample() = 0;
+};
+
+struct Oscillator : Generator {
     virtual void on(float /* frequency */, float /* velocity */) {};
 };
 
@@ -25,7 +28,7 @@ struct Lowpass {
     }
 };
 
-struct Saw : Generator {
+struct Saw : Oscillator {
     float frequency {0.0};
     float p_incr {0.0};
     float phase {0.0};
@@ -83,7 +86,7 @@ struct DriftingSaw : Saw {
     }
 };
 
-struct Sine : Generator {
+struct Sine : Oscillator {
     float frequency {0.0};
     float velocity {1.0};
     float phase {random_phase()};
@@ -129,14 +132,14 @@ struct DriftingSine : Sine {
     }
 };
 
-struct Noise : Generator {
+struct Noise : Oscillator {
     float sample() {
         return fast_rand_float();
     }
 };
 
 template<typename T1, typename T2>
-struct Double : Generator {
+struct Double : Oscillator {
     T1 osc1 {};
     T2 osc2 {};
     float detune {0.0};
@@ -156,7 +159,6 @@ template<typename T>
 struct Voice : Generator {
     T osc {};
     ADSR env {};
-    bool active {false};
 
     bool is_active() {
         return env.getState();
@@ -170,8 +172,8 @@ struct Voice : Generator {
         return float(osc.sample() * env.process());
     }
 
-    void note_on(int pitch, int velocity) {
-        float frequency = mtof(pitch);
+    void note_on(int note, int velocity) {
+        float frequency = mtof(note);
         osc.on(frequency, float(velocity) / 127.0);
 
         env.reset();
@@ -180,6 +182,9 @@ struct Voice : Generator {
 
     void note_off(int velocity) {
         env.gate(false);
+    }
+
+    void handle_control_change(int number, int value) {
     }
 };
 
@@ -208,20 +213,20 @@ struct VoiceManager : Generator {
         return sample;
     }
 
-    void note_on(int pitch, int velocity) {
+    void note_on(int note, int velocity) {
         for (auto &voice : voices) {
             if (!voice.is_active()) {
-                voice.note_on(pitch, velocity);
-                notes[pitch] = &voice;
+                voice.note_on(note, velocity);
+                notes[note] = &voice;
                 break;
             }
         }
     }
 
-    void note_off(int pitch, int velocity) {
-        if (notes[pitch]) {
-            notes[pitch]->note_off(velocity);
-            notes[pitch] = nullptr;
+    void note_off(int note, int velocity) {
+        if (notes[note]) {
+            notes[note]->note_off(velocity);
+            notes[note] = nullptr;
         }
     }
 };
