@@ -186,12 +186,12 @@ struct Voice : Generator {
 
 template<typename T>
 struct VoiceManager : Generator {
-    Voice<T> voices[config::MAX_VOICES];
-    Voice<T>* notes[127];
+    T voices[config::MAX_VOICES];
+    T* notes[127];
 
     VoiceManager() {
         for (auto &voice : voices) {
-            voice = Voice<T> {};
+            voice = T {};
         }
     }
 

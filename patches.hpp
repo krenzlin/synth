@@ -29,7 +29,7 @@ struct Organ : Generator {
 };
 
 
-struct Strings : Generator {
+struct StringsOsc : Generator {
     Double<Saw, DriftingSaw> osc {};
     Lowpass lp;
 
@@ -44,5 +44,13 @@ struct Strings : Generator {
 
     float sample() {
         return lp.process(osc.sample());
+    }
+};
+
+
+struct Strings : Voice<StringsOsc> {
+    Strings() {
+        env.setAttackRate(0.1 * config::SAMPLE_RATE);
+        env.setReleaseRate(0.1 * config::SAMPLE_RATE);
     }
 };
