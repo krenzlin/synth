@@ -16,7 +16,7 @@ TEST_CASE("[Generator] basic") {
 }
 
 
-TEST_CASE( "[Noise] sample") {
+TEST_CASE("[Noise] sample") {
     Noise noise;
 
     config::random_seed = 1.0;
@@ -24,7 +24,7 @@ TEST_CASE( "[Noise] sample") {
 }
 
 
-TEST_CASE( "[Saw] test implementation") {
+TEST_CASE("[Saw] test implementation") {
     const int steps = 100;
     float frequency = config::SAMPLE_RATE / float(steps);
 
@@ -41,13 +41,4 @@ TEST_CASE( "[Saw] test implementation") {
         CAPTURE(osc.p_incr);
         CHECK(osc.sample() == doctest::Approx(value));
     }
-
-}
-
-
-TEST_CASE( "[Voice] test running status") {
-    Voice<Noise> voice;
-    CHECK(voice.is_active() == false);
-    voice.note_on(440.0, 127.0);
-    CHECK(voice.is_active() == true);
 }
