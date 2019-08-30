@@ -89,17 +89,21 @@ struct Sine : Oscillator {
     float frequency {0.0};
     float velocity {1.0};
     float phase {random_phase()};
+    float p_incr {0.0};
 
     void on(float frequency, float velocity) override {
         this->frequency = frequency;
         this->velocity = velocity;
+        this->p_incr = phase_increment(this->frequency);
     }
 
     float sample() {
         float sample = fast_sine(phase) * velocity;;
 
-        phase += phase_increment(frequency);
-        phase = mod_phase(phase);
+        phase += p_incr;
+        if (phase > 1.0) {
+            phase -= 1.0;
+        }
         return sample;
     }
 };
@@ -113,12 +117,11 @@ struct DriftingSine : Sine {
     float sample() {
         float sample = fast_sine(phase);
 
-        phase += phase_increment(frequency + drift);
+        phase += p_incr;
         if (phase > 1.0) {
             phase -= 1.0;
 
             steps--;
-
             if (steps <= 0) {
                 steps = int(minus_plus_to_zero_one(fast_rand_float()) * max_steps);
                 drift = fast_rand_float();
@@ -126,7 +129,10 @@ struct DriftingSine : Sine {
                     drift = 0.0;
                 }
             }
+
+            p_incr = phase_increment(frequency + drift);
         }
+
         return sample;
     }
 };

@@ -12,11 +12,7 @@ struct Voice : Generator {
     }
 
     float sample() {
-        if (!is_active()) {
-            return 0.0;
-        }
-
-        return float(osc.sample() * env.process());
+        return osc.sample() * env.process();
     }
 
     void note_on(int note, int velocity) {
@@ -51,9 +47,7 @@ struct VoiceManager : Generator {
         float sample = 0.0;
 
         for (auto &voice : voices) {
-            if (voice.is_active()) {
-                sample += voice.sample();
-            }
+            sample += voice.sample();
         }
         sample /= float(config::MAX_VOICES);
 

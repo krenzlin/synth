@@ -44,7 +44,6 @@ public:
         env_release
     };
 
-protected:
 	int state;
 	float output;
 	float attackRate;
