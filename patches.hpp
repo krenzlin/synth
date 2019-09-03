@@ -5,7 +5,7 @@ inline float dist(float x, float a=0.0) {
     return (1.0 + a)*x / (1.0 + a*x*x);
 }
 
-struct Organ : Oscillator {
+struct OrganOsc : Oscillator {
     Double<Sine, DriftingSine> h0 {};
     Double<Sine, DriftingSine> h1 {};
     Double<Sine, DriftingSine> h2 {};
@@ -28,6 +28,7 @@ struct Organ : Oscillator {
     }
 };
 
+typedef VoiceManager< Voice<OrganOsc> > Organ;
 
 struct StringsOsc : Oscillator {
     Double<Saw, DriftingSaw> osc {};
@@ -48,9 +49,11 @@ struct StringsOsc : Oscillator {
 };
 
 
-struct Strings : Voice<StringsOsc> {
-    Strings() {
+struct StringVoice : Voice<StringsOsc> {
+    StringVoice() {
         env.setAttackRate(0.1 * config::SAMPLE_RATE);
         env.setReleaseRate(0.1 * config::SAMPLE_RATE);
     }
 };
+
+typedef VoiceManager<StringVoice> Strings;
