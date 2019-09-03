@@ -38,7 +38,7 @@ struct Saw : Oscillator {
         this->p_incr = phase_increment(this->frequency);
     }
 
-    float sample() {
+    float sample() override {
         float sample = phase;
         if (bandlimit) {
             sample -= poly_blep(phase, p_incr);
@@ -58,7 +58,7 @@ struct DriftingSaw : Saw {
     int steps {0};
     int max_steps {5};
 
-    float sample() {
+    float sample() override {
         float sample = phase;
         if (bandlimit) {
             sample -= poly_blep(phase, p_incr);
@@ -97,7 +97,7 @@ struct Sine : Oscillator {
         this->p_incr = phase_increment(this->frequency);
     }
 
-    float sample() {
+    float sample() override {
         float sample = fast_sine(phase) * velocity;;
 
         phase += p_incr;
@@ -114,7 +114,7 @@ struct DriftingSine : Sine {
     int steps {0};
     int max_steps {5};
 
-    float sample() {
+    float sample() override {
         float sample = fast_sine(phase);
 
         phase += p_incr;
@@ -138,7 +138,7 @@ struct DriftingSine : Sine {
 };
 
 struct Noise : Oscillator {
-    float sample() {
+    float sample() override {
         return fast_rand_float();
     }
 };
@@ -150,12 +150,12 @@ struct Double : Oscillator {
     float detune {0.0};
     float mix {0.5};
 
-    void on(float frequency, float velocity) {
+    void on(float frequency, float velocity) override {
         osc1.on(frequency - detune, velocity);
         osc2.on(frequency + detune, velocity);
     }
 
-    float sample() {
+    float sample() override {
         return mix * osc1.sample() + (1.0 - mix) * osc2.sample();
     }
 };

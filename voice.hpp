@@ -11,7 +11,7 @@ struct Voice : Generator {
         return env.getState();
     }
 
-    float sample() {
+    float sample() override {
         return osc.sample() * env.process();
     }
 
@@ -43,7 +43,7 @@ struct VoiceManager : Generator {
         }
     }
 
-    float sample() {
+    float sample() override {
         float sample = 0.0;
 
         for (auto &voice : voices) {

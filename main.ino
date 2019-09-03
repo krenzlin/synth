@@ -5,10 +5,10 @@
 #include "config.hpp"
 #include "defs.h"
 #include "sound.h"
-#include "osc.hpp"
+#include "patches.hpp"
 
 // declare Synth/Audio object in global namespace to keep it alive for the audio thread
-VoiceManager<Saw> vm {};
+Strings vm {};
 
 MIDI_CREATE_DEFAULT_INSTANCE();
 

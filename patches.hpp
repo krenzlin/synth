@@ -28,7 +28,7 @@ struct OrganOsc : Oscillator {
     }
 };
 
-typedef VoiceManager< Voice<OrganOsc> > Organ;
+using Organ = VoiceManager< Voice<OrganOsc> >;
 
 struct StringsOsc : Oscillator {
     Double<Saw, DriftingSaw> osc {};
@@ -56,4 +56,4 @@ struct StringVoice : Voice<StringsOsc> {
     }
 };
 
-typedef VoiceManager<StringVoice> Strings;
+using Strings = VoiceManager<StringVoice>;
