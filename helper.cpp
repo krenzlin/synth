@@ -4,7 +4,7 @@
 #include "config.hpp"
 
 // helper functions ------------------------------
-float mtof(int note) {
+float mtof(const int note) {
     return pow(2.0, (note - 69.0)/12.0) * config::TUNING;
 }
 
@@ -45,7 +45,7 @@ First divide by m and then floor result.
 
 */
 
-int random_MIDI_note(int min, int max) {
+int random_MIDI_note(const int min, const int max) {
     float rand = fast_rand_float();
     rand = minus_plus_to_zero_one(rand);
     int note = int(rand * (max - min));

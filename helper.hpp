@@ -14,7 +14,7 @@
 #endif
 
 // helper functions ------------------------------
-inline float phase_increment(float frequency, const float sr=config::SAMPLE_RATE) {
+inline float phase_increment(const float frequency, const float sr=config::SAMPLE_RATE) {
     return frequency / sr;
 }
 
@@ -40,13 +40,13 @@ inline float poly_blep(float p, float dp) {
 }
 
 // trafo: [0..1] => [-1..+1]
-inline float zero_one_to_minus_plus(float x) {
+inline float zero_one_to_minus_plus(const float x) {
     //return (x - 0.5) * 2.0;
     return 2.0*x - 1.0;
 }
 
 // trafo: [-1..+1] => [0..1]
-inline float minus_plus_to_zero_one(float x) {
+inline float minus_plus_to_zero_one(const float x) {
     return (x + 1.0) / 2.0;
 }
 
@@ -54,7 +54,7 @@ extern float sin_table[config::WAVETABLE_SIZE];
 void create_wavetable();
 
 // expects phase to be between 0.0 and 1.0
-inline float fast_sine(float phase) {
+inline float fast_sine(const float phase) {
     int index = int(phase * float(config::WAVETABLE_SIZE));
     return sin_table[index];
 }
@@ -84,6 +84,6 @@ inline float random_phase() {
     return minus_plus_to_zero_one(fast_rand_float());
 }
 
-int random_MIDI_note(int min=0, int max=127);
+int random_MIDI_note(const int min=0, const int max=127);
 
-float mtof(int note);
+float mtof(const int note);
