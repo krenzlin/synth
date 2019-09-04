@@ -1,3 +1,5 @@
+#include <array>
+
 #include "ADSR.h"
 #include "osc.hpp"
 
@@ -34,8 +36,8 @@ struct Voice : Generator {
 
 template<typename T>
 struct VoiceManager : Generator {
-    T voices[config::MAX_VOICES];
-    T* notes[127];
+    std::array<T, config::MAX_VOICES> voices;
+    std::array<T*, 127> notes;
 
     VoiceManager() {
         for (auto &voice : voices) {
