@@ -47,8 +47,11 @@ struct VoiceManager : Generator {
         float sample = 0.0;
 
         for (auto &voice : voices) {
-            sample += voice.sample();
+            if (voice.is_active()) {
+                sample += voice.sample();
+            }
         }
+
         sample /= float(config::MAX_VOICES);
 
         return sample;
