@@ -6,8 +6,8 @@
 
 #ifndef ARDUINO
 #include <iostream>
-#define PRINT(msg) std::cout << msg << std::endl
-#define SHOW(x) PRINT(#x " = " << x)
+#define PRINT(msg) std::cout << (msg) << std::endl
+#define SHOW(x) PRINT(#x " = " << (x))
 #else
 #define PRINT(msg)
 #define SHOW(x)
@@ -18,11 +18,11 @@ inline float phase_increment(const float frequency, const float sr=config::SAMPL
     return frequency / sr;
 }
 
-inline float mod_phase(float phase, const float mod=1.0) {
+inline float mod_phase(float phase, const float mod=1.0f) {
     while (phase > mod) {
         phase -= mod;
     }
-    while (phase < 0.0) {
+    while (phase < 0.0f) {
         phase += mod;
     }
     return phase;
@@ -31,23 +31,23 @@ inline float mod_phase(float phase, const float mod=1.0) {
 inline float poly_blep(float p, float dp) {
     if (p < dp) {
         p /= dp;
-        return p - p*p/2 - 0.5;
-    } else if (p > 1.0 - dp) {
-        p = (p - 1.0) / dp;
-        return p*p/2 + p + 0.5;
+        return p - p*p/2.f - 0.5f;
+    } else if (p > 1.0f - dp) {
+        p = (p - 1.0f) / dp;
+        return p*p/2.f + p + 0.5f;
     }
-    return 0.0;
+    return 0.0f;
 }
 
 // trafo: [0..1] => [-1..+1]
 inline float zero_one_to_minus_plus(const float x) {
     //return (x - 0.5) * 2.0;
-    return 2.0*x - 1.0;
+    return 2.f*x - 1.f;
 }
 
 // trafo: [-1..+1] => [0..1]
 inline float minus_plus_to_zero_one(const float x) {
-    return (x + 1.0) / 2.0;
+    return (x + 1.f) / 2.f;
 }
 
 extern float sin_table[config::WAVETABLE_SIZE];
