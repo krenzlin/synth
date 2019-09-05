@@ -26,7 +26,7 @@ int main() {
     create_wavetable();
     std::FILE* file = std::fopen("generated.raw", "wb");
     if (true) {
-        VoiceManager<Organ> osc {};
+        Organ osc {};
         osc.note_on(60-24, 127);
         write_to_file(osc, 5000, file);
         osc.note_on(60-2, 127);
@@ -39,7 +39,7 @@ int main() {
         write_to_file(osc, 5000, file);
     }
     if (false) {
-        VoiceManager<Saw> osc {};
+        VoiceManager<Voice<Saw>> osc {};
 
         osc.note_on(69, 127);
         osc.note_on(30, 127);
