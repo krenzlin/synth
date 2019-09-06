@@ -1,4 +1,4 @@
-.PHONY: profile test write perf
+.PHONY: profile test write perf callgraph
 
 test:
 	./tup bin/tests
@@ -14,6 +14,11 @@ profile:
 write:
 	./tup bin/write_to_file
 	bin/write_to_file
+
+callgraph:
+	./tup bin/profile
+	perf record --call-graph dwarf bin/profile
+	perf report --call-graph --stdio
 
 perf:
 	./tup bin/profile
