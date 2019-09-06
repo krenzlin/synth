@@ -1,7 +1,7 @@
 CFLAGS += -Wall -Wextra -pedantic --std=gnu++11
 CFLAGS += -I.
 CFLAGS += -g
-CFLAGS += -ffast-math -O3
+CFLAGS += -ffast-math -Ofast
 
 : foreach tests/*.cpp |> g++ -c $(CFLAGS) %f -o %o |> build/%B.o {test_objs}
 : foreach *.cpp |> g++ -c $(CFLAGS) %f -o %o |> build/%B.o
