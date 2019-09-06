@@ -49,7 +49,7 @@ void audio_loop(void* generator) {
         // fill buffer with samples
         for (auto i=0; i<config::BUFFER_SIZE; i++) {
             sample = ((Generator*)generator)->sample();
-            sample = (sample + 1.0) * DAC_MAX_VALUE/2;  // trafo: [-1...+1] => [0...255]
+            sample = (sample + 1.f) * DAC_MAX_VALUE/2.f;  // trafo: [-1...+1] => [0...255]
             buffer[i] = (unsigned int)(sample);
             buffer[i] = buffer[i] << 8;  // DAC uses only first 8 of the 16bit (MSB)
         }
