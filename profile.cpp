@@ -13,7 +13,7 @@ int main() {
     Organ osc {};
     for (auto k=0; k<10; k++) {
         osc.note_on(random_MIDI_note(), 127);
-        for (auto i=0; i<SR*5; i++) {
+        for (auto i=0; i<SR*10; i++) {
             osc.sample();
         }
     }

@@ -8,7 +8,7 @@
 #include "patches.hpp"
 
 // declare Synth/Audio object in global namespace to keep it alive for the audio thread
-Strings vm {};
+Organ vm {};
 
 MIDI_CREATE_DEFAULT_INSTANCE();
 
@@ -53,4 +53,12 @@ void setup() {
 
 void loop() {
     MIDI.read();
+    for (auto i=0; i<5; i++) {
+        vm.note_on(random_MIDI_note(40, 80), 127);
+        delay(500);
+    }
+    for (auto i=0; i<127; i++) {
+        vm.note_off(i, 127);
+    }
+    delay(1000);
 }
