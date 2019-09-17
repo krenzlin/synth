@@ -1,7 +1,8 @@
 CFLAGS += -Wall -Wextra -pedantic --std=gnu++11
 CFLAGS += -I.
-CFLAGS += -g
 CFLAGS += -ffast-math -Ofast
+CFLAGS += -g
+CFLAGS += -fsanitize=address -fsanitize-address-use-after-scope -fsanitize=undefined
 
 : foreach tests/*.cpp |> g++ -c $(CFLAGS) %f -o %o |> build/%B.o {test_objs}
 : foreach *.cpp |> g++ -c $(CFLAGS) %f -o %o |> build/%B.o

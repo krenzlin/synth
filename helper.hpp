@@ -55,7 +55,7 @@ void create_wavetable();
 
 // expects phase to be between 0.0 and 1.0
 inline float fast_sine(const float phase) {
-    int index = int(phase * float(config::WAVETABLE_SIZE));
+    int index = int(phase * float(config::WAVETABLE_SIZE - 1));
     return sin_table[index];
 }
 
