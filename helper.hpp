@@ -1,5 +1,6 @@
 #pragma once
 
+#include <array>
 #include <cmath>
 
 #include "config.hpp"
@@ -50,7 +51,7 @@ inline float minus_plus_to_zero_one(const float x) {
     return (x + 1.f) / 2.f;
 }
 
-extern float sin_table[config::WAVETABLE_SIZE];
+extern std::array<float, config::WAVETABLE_SIZE> sin_table;
 void create_wavetable();
 
 // expects phase to be between 0.0 and 1.0

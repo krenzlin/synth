@@ -9,7 +9,7 @@ float mtof(const int note) {
 }
 
 
-float sin_table[config::WAVETABLE_SIZE];
+std::array<float, config::WAVETABLE_SIZE> sin_table;
 void create_wavetable() {
     constexpr float increment {1.0 / (config::WAVETABLE_SIZE-1)}; // incrementing SIZE-1 times
     float phase {0.0};
