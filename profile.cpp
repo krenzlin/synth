@@ -1,7 +1,5 @@
 #ifndef ARDUINO
 
-#include <iostream>
-#include <stdio.h>
 #include "config.hpp"
 #include "osc.hpp"
 #include "patches.hpp"

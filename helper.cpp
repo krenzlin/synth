@@ -14,7 +14,7 @@ void create_wavetable() {
     constexpr float increment {1.0 / (config::WAVETABLE_SIZE-1)}; // incrementing SIZE-1 times
     float phase {0.0};
     for (auto i = 0; i < config::WAVETABLE_SIZE; ++i) {
-        sin_table[i] = sin(2.0*M_PI*phase);
+        sin_table[i] = std::sin(2.0*M_PI*phase);
         phase += increment;
     }
 }
