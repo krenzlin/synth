@@ -110,7 +110,6 @@ struct Sine : Oscillator {
 
 struct DriftingSine : Sine {
     float drift {0.0};
-    bool sign {false};
     int steps {0};
     int max_steps {5};
 

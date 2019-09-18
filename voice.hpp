@@ -36,14 +36,8 @@ struct Voice : Generator {
 
 template<typename T>
 struct VoiceManager : Generator {
-    std::array<T, config::MAX_VOICES> voices;
-    std::array<T*, 127> notes;
-
-    VoiceManager() {
-        for (auto &voice : voices) {
-            voice = T {};
-        }
-    }
+    std::array<T, config::MAX_VOICES> voices {};
+    std::array<T*, 127> notes {};
 
     float sample() override {
         float sample = 0.0;
