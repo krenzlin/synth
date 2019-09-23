@@ -74,9 +74,6 @@ struct DriftingSaw : Saw {
             if (steps <= 0) {
                 steps = int(minus_plus_to_zero_one(fast_rand_float()) * max_steps);
                 drift = fast_rand_float();
-                if ((drift > 1.0) | (drift < -1.0)) {
-                    drift = 0.0;
-                }
                 p_incr = phase_increment(frequency_ + drift);
             }
 
@@ -124,12 +121,8 @@ struct DriftingSine : Sine {
             if (steps <= 0) {
                 steps = int(minus_plus_to_zero_one(fast_rand_float()) * max_steps);
                 drift = fast_rand_float();
-                if ((drift > 1.0) | (drift < -1.0)) {
-                    drift = 0.0;
-                }
+                p_incr = phase_increment(frequency_ + drift);
             }
-
-            p_incr = phase_increment(frequency_ + drift);
         }
 
         return sample;

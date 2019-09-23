@@ -52,3 +52,12 @@ TEST_CASE( "[helpers::random_MIDI_note] setting min and max note") {
         CHECK(note <= 72);
     }
 }
+
+TEST_CASE( "[helpers::fast_rand_float] check if values are clamp'ed") {
+    for (auto i=0; i<10000; i++) {
+        float value = fast_rand_float();
+        CAPTURE(value);
+        CHECK(-1.f <= value);
+        CHECK(value <= 1.f);
+    }
+}
