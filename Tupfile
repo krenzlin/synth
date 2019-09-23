@@ -1,11 +1,13 @@
-CFLAGS += -Wall -Wextra -pedantic --std=gnu++11
+CXX = g++
+CFLAGS += --std=gnu++11
+CFLAGS += -Wall -Wextra -pedantic -Wcast-align -Wcast-qual -Wctor-dtor-privacy -Wdisabled-optimization -Wformat=2 -Winit-self -Wlogical-op -Wmissing-include-dirs -Wnoexcept -Wold-style-cast -Woverloaded-virtual -Wredundant-decls -Wshadow -Wsign-promo -Wstrict-null-sentinel -Wstrict-overflow=5 -Wundef -Wno-unused -Wno-variadic-macros -Wno-parentheses -fdiagnostics-show-option
 CFLAGS += -I.
 CFLAGS += -ffast-math -Ofast
 CFLAGS += -g
 CFLAGS += -fsanitize=address -fsanitize-address-use-after-scope -fsanitize=undefined
 
-: foreach tests/*.cpp |> g++ -c $(CFLAGS) %f -o %o |> build/%B.o {test_objs}
-: foreach *.cpp |> g++ -c $(CFLAGS) %f -o %o |> build/%B.o
-: build/ADSR.o build/helper.o {test_objs} |> g++ $(CFLAGS) %f -o %o |> bin/tests
-: build/write_to_file.o build/ADSR.o build/helper.o |> g++ $(CFLAGS) %f -o %o |> bin/write_to_file
-: build/profile.o build/ADSR.o build/helper.o |> g++ $(CFLAGS) %f -o %o |> bin/profile
+: foreach tests/*.cpp |> $(CXX) -c $(CFLAGS) %f -o %o |> build/%B.o {test_objs}
+: foreach *.cpp |> $(CXX) -c $(CFLAGS) %f -o %o |> build/%B.o
+: build/ADSR.o build/helper.o {test_objs} |> $(CXX) $(CFLAGS) %f -o %o |> bin/tests
+: build/write_to_file.o build/ADSR.o build/helper.o |> $(CXX) $(CFLAGS) %f -o %o |> bin/write_to_file
+: build/profile.o build/ADSR.o build/helper.o |> $(CXX) $(CFLAGS) %f -o %o |> bin/profile
