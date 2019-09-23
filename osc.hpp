@@ -28,14 +28,14 @@ struct Lowpass {
 };
 
 struct Saw : Oscillator {
-    float frequency {0.0};
+    float frequency_ {0.0};
     float p_incr {0.0};
     float phase {0.0};
     bool bandlimit {true};
 
     void on(float frequency, float /* velocity */) override {
-        this->frequency = frequency;
-        this->p_incr = phase_increment(this->frequency);
+        frequency_ = frequency;
+        p_incr = phase_increment(frequency_);
     }
 
     float sample() override {
@@ -77,7 +77,7 @@ struct DriftingSaw : Saw {
                 if ((drift > 1.0) | (drift < -1.0)) {
                     drift = 0.0;
                 }
-                p_incr = phase_increment(frequency + drift);
+                p_incr = phase_increment(frequency_ + drift);
             }
 
         }
@@ -86,19 +86,19 @@ struct DriftingSaw : Saw {
 };
 
 struct Sine : Oscillator {
-    float frequency {0.0};
-    float velocity {1.0};
+    float frequency_ {0.0};
+    float velocity_ {1.0};
     float phase {random_phase()};
     float p_incr {0.0};
 
     void on(float frequency, float velocity) override {
-        this->frequency = frequency;
-        this->velocity = velocity;
-        this->p_incr = phase_increment(this->frequency);
+        frequency_ = frequency;
+        velocity_ = velocity;
+        p_incr = phase_increment(frequency_);
     }
 
     float sample() override {
-        float sample = fast_sine(phase) * velocity;;
+        float sample = fast_sine(phase) * velocity_;
 
         phase += p_incr;
         if (phase > 1.0) {
@@ -129,7 +129,7 @@ struct DriftingSine : Sine {
                 }
             }
 
-            p_incr = phase_increment(frequency + drift);
+            p_incr = phase_increment(frequency_ + drift);
         }
 
         return sample;

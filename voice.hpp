@@ -19,18 +19,17 @@ struct Voice : Generator {
 
     void note_on(const int note, const int velocity) {
         float frequency = mtof(note);
-        osc.on(frequency, float(velocity) / 127.0);
+        osc.on(frequency, float(velocity) / 127.f);
 
         env.reset();
         env.gate(true);
     }
 
-    void note_off(int velocity) {
+    void note_off(int velocity=127) {
         env.gate(false);
     }
 
-    void handle_control_change(const int number, const int value) {
-    }
+    void handle_control_change(const int /* number */, const int /* value */) {}
 };
 
 
@@ -53,7 +52,7 @@ struct VoiceManager : Generator {
         return sample;
     }
 
-    void note_on(const int note, const int velocity) {
+    void note_on(const int note, const int velocity=127) {
         for (auto &voice : voices) {
             if (!voice.is_active()) {
                 voice.note_on(note, velocity);
@@ -63,7 +62,7 @@ struct VoiceManager : Generator {
         }
     }
 
-    void note_off(const int note, const int velocity) {
+    void note_off(const int note, const int velocity=127) {
         if (notes[note]) {
             notes[note]->note_off(velocity);
             notes[note] = nullptr;

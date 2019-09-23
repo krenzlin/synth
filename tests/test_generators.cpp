@@ -37,7 +37,7 @@ TEST_CASE("[Saw] test implementation") {
         value = zero_one_to_minus_plus(value);
 
         CAPTURE(i);
-        CAPTURE(osc.frequency);
+        CAPTURE(osc.frequency_);
         CAPTURE(osc.p_incr);
         CHECK(osc.sample() == doctest::Approx(value));
     }
