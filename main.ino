@@ -24,7 +24,7 @@ void handleNoteOff(byte channel, byte pitch, byte velocity) {
 }
 
 void handleControlChange(byte channel, byte number, byte value) {
-    float data = float(value)/127.0;
+    vm.handle_control_change(number, value);
 }
 
 void blink(int N) {

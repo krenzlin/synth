@@ -1,24 +1,24 @@
 #include "osc.hpp"
 #include "voice.hpp"
 
-inline float dist(float x, float a=0.0) {
-    return (1.0 + a)*x / (1.0 + a*x*x);
+inline constexpr float dist(float x, float a=0.f) noexcept {
+    return (1.f + a)*x / (1.f + a*x*x);
 }
 
 struct OrganOsc : Oscillator {
     Double<Sine, DriftingSine> h0 {};
     Double<Sine, DriftingSine> h1 {};
     Double<Sine, DriftingSine> h2 {};
-    float dist_amount = 0.28;
+    float dist_amount = 0.28f;
 
     void on(float frequency, float velocity) override {
         h0.on(frequency, velocity);
-        h1.on(frequency*2.0, velocity*0.707);
-        h2.on(frequency*4.0, velocity*0.707*0.707);
+        h1.on(frequency*2.f, velocity*0.707f);
+        h2.on(frequency*4.f, velocity*0.707f*0.707f);
 
-        h0.mix = 0.707;
-        h1.mix = 0.707;
-        h2.mix = 0.707;
+        h0.mix = 0.707f;
+        h1.mix = 0.707f;
+        h2.mix = 0.707f;
     }
 
     float sample() override {
@@ -36,7 +36,7 @@ struct StringsOsc : Oscillator {
 
     void on(float frequency, float velocity) override {
         lp.set_cutoff(frequency);
-        osc.mix = 0.8;
+        osc.mix = 0.8f;
         osc.osc1.phase = random_phase();
         osc.osc2.phase = random_phase();
         osc.osc2.max_steps = 20;

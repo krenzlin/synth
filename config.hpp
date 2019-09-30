@@ -1,7 +1,7 @@
 #pragma once
 
 namespace config {
-    static const float SAMPLE_RATE {44100.0};  // FLOAT !!!
+    static const int SAMPLE_RATE {44100};
     static const int BUFFER_SIZE {32};
 
     static const int MAX_VOICES {10};

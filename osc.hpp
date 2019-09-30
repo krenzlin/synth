@@ -18,7 +18,7 @@ struct Lowpass {
 
     void set_cutoff(float f_c) {
         float w_c = f_c / config::SAMPLE_RATE;
-        this->alpha = w_c / (1.0 + w_c);
+        this->alpha = w_c / (1.f + w_c);
     }
 
     float process(float x) {
@@ -46,12 +46,16 @@ struct Saw : Oscillator {
         sample = zero_one_to_minus_plus(sample);
 
         phase += p_incr;
-        if (phase > 1.0) {
-            phase -= 1.0;
+        if (phase > 1.f) {
+            phase -= 1.f;
         }
         return sample;
     }
 };
+
+inline int random_steps(int max_steps) {
+    return int(minus_plus_to_zero_one(fast_rand_float()) * float(max_steps));
+}
 
 struct DriftingSaw : Saw {
     float drift {0.0};
@@ -66,13 +70,13 @@ struct DriftingSaw : Saw {
         sample = zero_one_to_minus_plus(sample);
 
         phase += p_incr;
-        if (phase > 1.0) {
-            phase -= 1.0;
+        if (phase > 1.f) {
+            phase -= 1.f;
 
             steps--;
 
             if (steps <= 0) {
-                steps = int(minus_plus_to_zero_one(fast_rand_float()) * max_steps);
+                steps = random_steps(max_steps);
                 drift = fast_rand_float();
                 p_incr = phase_increment(frequency_ + drift);
             }
@@ -98,8 +102,8 @@ struct Sine : Oscillator {
         float sample = fast_sine(phase) * velocity_;
 
         phase += p_incr;
-        if (phase > 1.0) {
-            phase -= 1.0;
+        if (phase > 1.f) {
+            phase -= 1.f;
         }
         return sample;
     }
@@ -114,12 +118,12 @@ struct DriftingSine : Sine {
         float sample = fast_sine(phase);
 
         phase += p_incr;
-        if (phase > 1.0) {
-            phase -= 1.0;
+        if (phase > 1.f) {
+            phase -= 1.f;
 
             steps--;
             if (steps <= 0) {
-                steps = int(minus_plus_to_zero_one(fast_rand_float()) * max_steps);
+                steps = random_steps(max_steps);
                 drift = fast_rand_float();
                 p_incr = phase_increment(frequency_ + drift);
             }

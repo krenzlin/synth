@@ -32,9 +32,10 @@ void audio_setup() {
         .dma_buf_len = config::BUFFER_SIZE, // length of each DMA buffer (in samples)
         .use_apll = false,
         .tx_desc_auto_clear = true,
+        .fixed_mclk = 0,
     };
 
-    esp_err_t err = i2s_driver_install(I2S_NUM_0, &i2s_config, 0, NULL);
+    i2s_driver_install(I2S_NUM_0, &i2s_config, 0, NULL);
 
     // important otherwise no sound
     i2s_set_dac_mode(I2S_DAC_CHANNEL_RIGHT_EN);
@@ -55,7 +56,7 @@ void audio_loop(void* generator) {
         }
 
         // write to I2S DMA
-        esp_err_t err = i2s_write(I2S_NUM_0, &buffer, sizeof(sample)*config::BUFFER_SIZE, &bytes_written, portMAX_DELAY);
+        i2s_write(I2S_NUM_0, &buffer, sizeof(sample)*config::BUFFER_SIZE, &bytes_written, portMAX_DELAY);
     }
 }
 
