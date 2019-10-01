@@ -79,6 +79,10 @@ inline float ADSR::process() {
                 output = sustainLevel;
                 state = env_sustain;
             }
+            if (output <= 0.0) {
+                output = 0.0;
+                state = env_idle;
+            }
             break;
         case env_sustain:
             break;

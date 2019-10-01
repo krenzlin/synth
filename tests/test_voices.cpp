@@ -10,6 +10,32 @@ TEST_CASE("[Voice] test running status") {
     CHECK(voice.is_active() == true);
 }
 
+TEST_CASE("[Voice] test if voice gets inactive when envelope runs out") {
+    Voice<Noise> voice;
+    voice.env.setAttackRate(0.f);
+    voice.env.setDecayRate(1.f);  // <-- !! decay in 1 sample, BUT see below
+    voice.env.setSustainLevel(0.f);
+    voice.env.setReleaseRate(0.f);
+
+
+
+    voice.note_on(69, 127);
+    CAPTURE(voice.env.output);
+    CAPTURE(voice.env.state);
+
+
+    CHECK(voice.is_active() == true);
+
+    // has to go through attack and decay --> 2 samples
+
+    voice.sample(); // attack
+    voice.sample(); // decay
+    //voice.sample(); // sustain
+
+
+    CHECK(voice.is_active() == false);
+}
+
 
 TEST_CASE("[Voice] test interface") {
     Voice<Noise> voice;
