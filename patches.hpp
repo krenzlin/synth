@@ -5,13 +5,13 @@ inline constexpr float dist(float x, float a=0.f) noexcept {
     return (1.f + a)*x / (1.f + a*x*x);
 }
 
-struct OrganOsc : Oscillator {
+struct OrganOsc {
     Double<Sine, DriftingSine> h0 {};
     Double<Sine, DriftingSine> h1 {};
     Double<Sine, DriftingSine> h2 {};
     float dist_amount = 0.28f;
 
-    void on(float frequency, float velocity) override {
+    void on(float frequency, float velocity) {
         h0.on(frequency, velocity);
         h1.on(frequency*2.f, velocity*0.707f);
         h2.on(frequency*4.f, velocity*0.707f*0.707f);
@@ -21,7 +21,7 @@ struct OrganOsc : Oscillator {
         h2.mix = 0.707f;
     }
 
-    float sample() override {
+    float sample() {
         return dist(h0.sample() + \
                 h1.sample() + \
                 h2.sample(), dist_amount);
@@ -30,11 +30,11 @@ struct OrganOsc : Oscillator {
 
 using Organ = VoiceManager< Voice<OrganOsc> >;
 
-struct StringsOsc : Oscillator {
+struct StringsOsc {
     Double<Saw, DriftingSaw> osc {};
     Lowpass lp;
 
-    void on(float frequency, float velocity) override {
+    void on(float frequency, float velocity) {
         lp.set_cutoff(frequency);
         osc.mix = 0.8f;
         osc.osc1.phase = random_phase();
@@ -43,7 +43,7 @@ struct StringsOsc : Oscillator {
         osc.on(frequency, velocity);
     }
 
-    float sample() override {
+    float sample() {
         return lp.process(osc.sample());
     }
 };

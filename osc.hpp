@@ -3,11 +3,8 @@
 #include "config.hpp"
 #include "helper.hpp"
 
-struct Generator {
-    virtual float sample() = 0;
-};
 
-struct Oscillator : Generator {
+struct Oscillator {
     virtual void on(float /* frequency */, float /* velocity */) {};
 };
 
@@ -38,7 +35,7 @@ struct Saw : Oscillator {
         p_incr = phase_increment(frequency_);
     }
 
-    float sample() override {
+    float sample() {
         float sample = phase;
         if (bandlimit) {
             sample -= poly_blep(phase, p_incr);
@@ -62,7 +59,7 @@ struct DriftingSaw : Saw {
     int steps {0};
     int max_steps {5};
 
-    float sample() override {
+    float sample() {
         float sample = phase;
         if (bandlimit) {
             sample -= poly_blep(phase, p_incr);
@@ -98,7 +95,7 @@ struct Sine : Oscillator {
         p_incr = phase_increment(frequency_);
     }
 
-    float sample() override {
+    float sample() {
         float sample = fast_sine(phase) * velocity_;
 
         phase += p_incr;
@@ -114,7 +111,7 @@ struct DriftingSine : Sine {
     int steps {0};
     int max_steps {5};
 
-    float sample() override {
+    float sample() {
         float sample = fast_sine(phase);
 
         phase += p_incr;
@@ -134,7 +131,7 @@ struct DriftingSine : Sine {
 };
 
 struct Noise : Oscillator {
-    float sample() override {
+    float sample() {
         return fast_rand_float();
     }
 };
@@ -151,7 +148,7 @@ struct Double : Oscillator {
         osc2.on(frequency + detune, velocity);
     }
 
-    float sample() override {
+    float sample() {
         return mix * osc1.sample() + (1.0 - mix) * osc2.sample();
     }
 };

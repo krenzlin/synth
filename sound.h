@@ -41,6 +41,7 @@ void audio_setup() {
     i2s_set_dac_mode(I2S_DAC_CHANNEL_RIGHT_EN);
 }
 
+template<typename T>
 void audio_loop(void* generator) {
     static unsigned int buffer[config::BUFFER_SIZE];
     static float sample {0.0};
@@ -49,7 +50,7 @@ void audio_loop(void* generator) {
     while(1) {
         // fill buffer with samples
         for (auto i=0; i<config::BUFFER_SIZE; i++) {
-            sample = ((Generator*)generator)->sample();
+            sample = ((T*)generator)->sample();
             sample = (sample + 1.f) * DAC_MAX_VALUE/2.f;  // trafo: [-1...+1] => [0...255]
             buffer[i] = (unsigned int)(sample);
             buffer[i] = buffer[i] << 8;  // DAC uses only first 8 of the 16bit (MSB)
@@ -60,7 +61,8 @@ void audio_loop(void* generator) {
     }
 }
 
-void audio_start(Generator &generator) {
+template<typename T>
+void audio_start(T &generator) {
     int core {0};
     if (CONFIG_ARDUINO_RUNNING_CORE == 0) {
         core = 1;
@@ -69,7 +71,7 @@ void audio_start(Generator &generator) {
     }
 
     xTaskCreatePinnedToCore(
-        audio_loop,     // task code
+        audio_loop<T>,     // task code
         "audio_loop",   // task name
         1000,           // usStackDepth
         &generator,      // parameters
@@ -78,7 +80,8 @@ void audio_start(Generator &generator) {
         core);          // core id
 }
 
-void audio(Generator &generator) {
+template<typename T>
+void audio(T &generator) {
     audio_setup();
-    audio_start(generator);
+    audio_start<T>(generator);
 }

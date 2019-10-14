@@ -48,17 +48,9 @@ void setup() {
     MIDI.setHandleControlChange(handleControlChange);
     MIDI.begin(MIDI_CHANNEL_OMNI);
 
-    audio(vm);
+    audio<Organ>(vm);
 }
 
 void loop() {
     MIDI.read();
-    for (auto i=0; i<5; i++) {
-        vm.note_on(random_MIDI_note(40, 80), 127);
-        delay(500);
-    }
-    for (auto i=0; i<127; i++) {
-        vm.note_off(i, 127);
-    }
-    delay(1000);
 }

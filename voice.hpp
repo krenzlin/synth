@@ -5,7 +5,7 @@
 
 
 template<typename T>
-struct Voice : Generator {
+struct Voice {
     T osc {};
     ADSR env {};
 
@@ -13,7 +13,7 @@ struct Voice : Generator {
         return env.getState();
     }
 
-    float sample() override {
+    float sample() {
         return osc.sample() * env.process();
     }
 
@@ -34,11 +34,11 @@ struct Voice : Generator {
 
 
 template<typename T>
-struct VoiceManager : Generator {
+struct VoiceManager {
     std::array<T, config::MAX_VOICES> voices {};
     std::array<T*, 127> notes {};
 
-    float sample() override {
+    float sample() {
         float sample = 0.0;
 
         for (auto &voice : voices) {
